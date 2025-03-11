@@ -1,10 +1,15 @@
 SERVER = ServerUDP.c
 CLIENT = ClientUDP.c
+SCRIPT = config.sh
 
-all:
-	gcc -o server $(SERVER)
-#	./client_setup.sh
+all: client server
+
+client: $(CLIENT)
+	./$(SCRIPT)
 	gcc -o client $(CLIENT)
+
+server: $(SERVER)
+	gcc -o server $(SERVER)
 
 clean:
 
