@@ -6,17 +6,11 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/11 13:36:18 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 00:15:40 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdio.h> 
-#include <string.h> 
-#include <sys/socket.h> 
-#include <netinet/in.h> 
-#define PORT 8080 
-#define MAXLINE 1000 
+#include "socket_is_closed.h"
 
 int main( void )
 {
@@ -37,13 +31,29 @@ int main( void )
 		perror( "sendto failed" );
 	} */
 
-    for ( int i = 0; i < 4; i++ ) {
+	t_player player;
+	memset(&player, 0, sizeof(t_player));
+	
+	//player init
+	memmove(&player.sockaddr, &serveraddr, sizeof(struct sockaddr_in));
+	memmove(&player.ip, "0.0.0.0", 15);
+	memmove(&player.name, "pippo", 5);
+	player.socket = fd;
+	printf("fd=%i\n", fd);
+
+	pthread_t	tid;
+	
+	if (pthread_create(&tid, NULL, &minigame, &player) < 0)
+		perror( "minigame launch failed" );
+
+    /* for ( int i = 0; i < 4; i++ ) {
         if (sendto( fd, "hello", 5, 0, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 ) {
             perror( "sendto failed" );
             break;
         }
         printf( "message sent\n" );
-    }
+    } */
 
+	pthread_join(tid, NULL);
     close( fd );
 }
