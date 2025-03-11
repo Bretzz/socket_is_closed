@@ -3,7 +3,7 @@ CLIENT = ClientUDP.c
 
 all:
 	gcc -o server $(SERVER)
-	./client_setup.sh
+#	./client_setup.sh
 	gcc -o client $(CLIENT)
 
 clean:

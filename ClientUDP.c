@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientUDP.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/11 00:03:40 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/11 01:00:03 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int main( void )
     serveraddr.sin_addr.s_addr = htonl( 0x7f000001 );  //my_pc=0x0a0c020b //loclhost=0x7f000001
 
 	//replace-next
-	if (sendto( fd, "0x0a0c020b", 10, 0, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 ) {
+	if (sendto( fd, "0x7f000001", 10, 0, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 ) {
 		perror( "sendto failed" );
 	}
 

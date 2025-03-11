@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerUDP.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:44 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/11 00:03:30 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/11 01:28:12 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <netinet/in.h> 
 #define PORT 8080
 #define MAXLINE 1000 
+#define MAXPLAYERS 2
 
 int main( void )
 {
@@ -37,15 +38,20 @@ int main( void )
         return 1;
     }
 
+    struct sockaddr clientaddr;
+    socklen_t clientaddr_len = sizeof(clientaddr);
+    /* memset(&clientaddr[0], 0, sizeof(clientaddr[0]));
+    memset(&clientaddr[1], 0, sizeof(clientaddr[1])); */
+
     char buffer[200];
     while ( 1 ) {
-        int length = recvfrom( fd, buffer, sizeof(buffer) - 1, 0, NULL, 0 );
+        int length = recvfrom( fd, buffer, sizeof(buffer) - 1, 0, &clientaddr, &clientaddr_len );
         if ( length < 0 ) {
             perror( "recvfrom failed" );
             break;
         }
         buffer[length] = '\0';
-        printf( "%d bytes: '%s'\n", length, buffer );
+        printf( "%d bytes: '%s' from: %s\n", length, buffer, clientaddr.sa_data );
     }
 
     close( fd );
