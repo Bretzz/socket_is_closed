@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 22:33:07 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 23:13:09 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,6 +166,16 @@ static void	*server_reciever(void *arg)
 	t_recenv	*recenv;
 
 	recenv = (t_recenv *)arg;
+	
+	/* struct addrinfo hints, *serv;
+
+	memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_INET;  // use IPv4 or IPv6, whichever
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+    getaddrinfo(NULL, "42042", &hints, &serv); */
+	
 	int recvfd, playerfd[2];
     if ( (recvfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 )
 	{
@@ -179,16 +189,14 @@ static void	*server_reciever(void *arg)
     recvaddr.sin_family = AF_INET;
     recvaddr.sin_port = htons( 42042 );
 	recvaddr.sin_addr.s_addr = htonl( INADDR_ANY ); //host setup
-
+	
 	//binding host reciever socket to ANY address
-	if ( bind(recvfd, (struct sockaddr *)&recvaddr, sizeof(struct sockaddr_in)) < 0 )
+	if ( bind(recvfd, (struct sockaddr *)&recvaddr, sizeof(recvaddr)) < 0 )
 	{
 		perror( "reciever bind failed" );
 		return (NULL);
 	}
 
-    struct sockaddr_in addrin;
-    socklen_t addr_len = sizeof(struct sockaddr_in);
 	
 	//listening for 1 connection
 	if ( listen(recvfd, 1) < 0 )
@@ -198,6 +206,9 @@ static void	*server_reciever(void *arg)
 	}
 	ft_printf("I'm listening...\n");
 	
+	struct sockaddr_in addrin;
+	socklen_t addr_len = sizeof(struct sockaddr_in);
+
 	//accepting 1 connection
 	playerfd[0] = accept(recvfd, (struct sockaddr *)&addrin, &addr_len);
 	if ( playerfd[0] < 0 )

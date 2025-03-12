@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 22:31:09 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 23:02:48 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,19 +115,31 @@ static void	client_player_init(t_player *player, char **env)
 	serveraddr.sin_port = htons( 50037 );              
 	serveraddr.sin_addr.s_addr = inet_addr(get_serv_ip(env)); */
 	
+	struct addrinfo hints, *serv;
+	
+	// first, load up address structs with getaddrinfo():
+	
+	memset(&hints, 0, sizeof hints);
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	
+	getaddrinfo(get_serv_ip(env), "42042", &hints, &serv);
+	
+	// make a socket:
+	
 	int connfd;
-    if ( (connfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 )
+    if ( (connfd = socket(serv->ai_family, serv->ai_socktype, serv->ai_protocol)) < 0 )
 	{
         perror( "reciever socket failed" );
         return ;
     }
 	printf("connfd=%i\n", connfd);
 
-    struct sockaddr_in serveraddr;
+   /*  struct sockaddr_in serveraddr;
     memset( &serveraddr, 0, sizeof(serveraddr) );
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_port = htons( 42042 );
-	serveraddr.sin_addr.s_addr = inet_addr(get_serv_ip(env)); //client setup
+	serveraddr.sin_addr.s_addr = inet_addr(get_serv_ip(env)); //client setup */
 
 	//binding reciever socket to server address
 	/* if ( bind(recvfd, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 )
@@ -137,7 +149,7 @@ static void	client_player_init(t_player *player, char **env)
 	} */
 
 	//connecting to the server
-	if ( connect(connfd, (struct sockaddr *)&serveraddr, sizeof(struct sockaddr_in)) < 0 )
+	if ( connect(connfd, serv->ai_addr, serv->ai_addrlen) < 0 )
 	{
 		perror( "reciever bind failed" );
 		return ;
@@ -145,10 +157,10 @@ static void	client_player_init(t_player *player, char **env)
 	printf("connected to the server\n");
 
 	//send test
-	if (sendto( connfd, get_locl_ip(env), 15, 0, (struct sockaddr *)&serveraddr, sizeof(struct sockaddr_in)) < 0 )
+	if (sendto( connfd, get_locl_ip(env), 15, 0, (struct sockaddr *)&serv->ai_addr, sizeof(struct sockaddr_in)) < 0 )
 		perror( "sendto failed" );
 		
-	memmove(&player->sockaddr, &serveraddr, sizeof(struct sockaddr_in));
+	memmove(&player->sockaddr, &serv->ai_addr, sizeof(struct sockaddr_in));
 	memmove(&player->ip, get_locl_ip(env), 15);
 	memmove(&player->name, "pippo", 5);
 	player->socket = connfd;
