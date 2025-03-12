@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minigame.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 00:16:39 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 02:10:36 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static int clean_exit(void *arg)
 
 	mlx = (t_mlx *)arg;
 	mlx_destroy_window(mlx->mlx, mlx->win);
-	mlx_destroy_display(mlx->mlx);
+	//mlx_destroy_display(mlx->mlx);
 	free(mlx->mlx);
 	exit(EXIT_SUCCESS);
 }
@@ -75,23 +75,22 @@ static int	put_board(t_mlx *mlx)
 
 static int	send_pos(t_player player)
 {
-	char	pos[15];
+	char	pos[30];
 	char	*coords[3];
 	
 	coords[0] = ft_itoa((int)player.pos.x);
-	coords[1] = ft_itoa((int)player.pos.x);
-	coords[2] = ft_itoa((int)player.pos.x);
-	memset(pos, 0, 15);
-	ft_strlcat(pos, coords[0], strlen(coords[0] + 1));
-	ft_strlcat(pos, ":", strlen(pos) + 2);
+	coords[1] = ft_itoa((int)player.pos.y);
+	coords[2] = ft_itoa((int)player.pos.z);
+	memset(pos, 0, 30);
+	ft_strlcpy(pos, player.ip, 16);
+	ft_strlcat(pos, "=", strlen(pos) + 2);
 	ft_strlcat(pos, coords[0], strlen(pos) + strlen(coords[0]) + 1);
 	ft_strlcat(pos, ":", strlen(pos) + 2);
-	ft_strlcat(pos, coords[0], strlen(pos) + strlen(coords[0]) + 1);
-	printf("socket=%i\n", player.socket);
-	if (sendto( player.socket, pos, 15, 0, (struct sockaddr *)&player.sockaddr, sizeof(struct sockaddr_in)) < 0 )
+	ft_strlcat(pos, coords[1], strlen(pos) + strlen(coords[1]) + 1);
+	ft_strlcat(pos, ":", strlen(pos) + 2);
+	ft_strlcat(pos, coords[2], strlen(pos) + strlen(coords[2]) + 1);
+	if (sendto( player.socket, pos, 30, 0, (struct sockaddr *)&player.sockaddr, sizeof(struct sockaddr_in)) < 0 )
 		perror( "sendto failed" );
-	else
-		printf( "pos sent\n" );
 	free(coords[0]); free(coords[1]); free(coords[2]);
 	return (0);
 }
@@ -101,15 +100,15 @@ static int	handle_heypress(int keysym, void *arg)
 	t_mlx	*mlx;
 
 	mlx = (t_mlx *)arg;
-	if (keysym == XK_Escape)
+	if (keysym == XK_Escape || keysym == 53)
 		clean_exit(mlx);
-	else if (keysym == XK_Down)
+	else if (keysym == XK_Down || keysym == 125)
 		mlx->player.pos.y += 10;
-	else if (keysym == XK_Up)
+	else if (keysym == XK_Up || keysym == 126)
 		mlx->player.pos.y -= 10;
-	else if (keysym == XK_Left)
+	else if (keysym == XK_Left || keysym == 123)
 		mlx->player.pos.x -= 10;
-	else if (keysym == XK_Right)
+	else if (keysym == XK_Right || keysym == 124)
 		mlx->player.pos.x += 10;
 	else
 		printf("Key Pressed: %i\n", keysym);
@@ -137,7 +136,10 @@ void	*minigame(void	*arg)
 
 /* int	main()
 {
-	if (!minigame(NULL))
+	t_player player;
+
+	memset(&player, 0, sizeof(t_player));
+	if (!minigame(&player))
 		return (0);
 	return (1);
 } */

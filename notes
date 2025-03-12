@@ -1,0 +1,5 @@
+local IP:
+    ipconfig getifaddr en0
+public IP: 
+    dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com
+    curl ifconfig.me

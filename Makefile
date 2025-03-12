@@ -33,7 +33,7 @@ INKS			= -I$(LIBFT_DIR) -I$(MLX_DIR) -O3
 
 #source files (expected in the root folder)
 SRCS_DIR		=
-SRC_FILES		= minigame.c
+SRC_FILES		=
 SRCS			= $(addprefix $(SRCS_DIR), $(SRC_FILES))
 
 # Objects
@@ -85,23 +85,23 @@ $(LIBFT): $(LIBFT_DIR)
 
 minigame: minigame.c $(MLX) $(LIBFT)
 	@echo "${BOLD}compiling minigame...${RESET}"
-	@$(CC) $(CFLAGS) minigame.c $(MLX) $(LINKS) $(INKS) -o minigame \
+	@$(CC) $(CFLAGS) minigame.c $(MLX) $(LIBFT) $(LINKS) $(INKS) -o minigame \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 client: $(MLX) $(LIBFT) $(OBJS) $(CLIENT)
-	@./$(SCRIPT)
+#	@./$(SCRIPT)
 	@echo "${BOLD}compiling client...${RESET}"
-	@$(CC) $(CFLAGS) $(CLIENT) $(OBJS_DIR)* $(MLX) $(LIBFT) $(LINKS) $(INKS) -o client \
+	@$(CC) $(CFLAGS) $(CLIENT) minigame.c $(MLX) $(LIBFT) $(LINKS) $(INKS) -o client \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 server: $(MLX) $(LIBFT) $(OBJS) $(SERVER)
 	@echo "${BOLD}compiling server...${RESET}"
-	@$(CC) $(CFLAGS) $(SERVER) $(OBJS_DIR)* $(MLX) $(LIBFT) $(LINKS) $(INKS) -o server \
+	@$(CC) $(CFLAGS) $(SERVER) $(MLX) $(LIBFT) $(LINKS) $(INKS) -o server \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 clean:
-
-fclean:
-	@rm -rf client server $(MLX_DIR)
+	@rm -f client server
+fclean: clean
+	@rm -rf $(MLX) $(LIBFT) $(OBJS_DIR)
 
 re: fclean all

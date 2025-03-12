@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientUDP.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 00:15:40 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 01:56:54 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,19 +41,14 @@ int main( void )
 	player.socket = fd;
 	printf("fd=%i\n", fd);
 
-	pthread_t	tid;
+	//pthread_t	tid;
 	
-	if (pthread_create(&tid, NULL, &minigame, &player) < 0)
-		perror( "minigame launch failed" );
+    //reciever
+	/* if (pthread_create(&tid, NULL, &reciever, NULL) < 0)
+		perror( "minigame launch failed" ); */
 
-    /* for ( int i = 0; i < 4; i++ ) {
-        if (sendto( fd, "hello", 5, 0, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 ) {
-            perror( "sendto failed" );
-            break;
-        }
-        printf( "message sent\n" );
-    } */
+    minigame(&player);
 
-	pthread_join(tid, NULL);
+	//pthread_join(tid, NULL);
     close( fd );
 }
