@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 00:05:31 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 00:06:45 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void toutorial_init2(t_player *player, char **env)
 	
     if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("\n Socket creation error \n");
-        return -1;
+        return ;
     }
 
     serv_addr.sin_family = AF_INET;
