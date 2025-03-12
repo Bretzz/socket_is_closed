@@ -77,7 +77,7 @@ $(MLX_DIR):
 	&& ls $(MLX_DIR) || mv `ls | grep $(MLX_DIR)` $(MLX_DIR) \
 	&& $(MAKE) -C $(MLX_DIR)
 
-$(MLX):
+$(MLX): $(MLX_DIR)
 	@rm -f $(MLX_DIR)/libmlx.a
 	@$(MAKE) -C $(MLX_DIR)
 

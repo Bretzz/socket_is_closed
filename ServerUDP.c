@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 21:21:46 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 22:16:12 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static int	update_player(const char *ip, const char *coords, t_player *player)
 	return (1);
 }
 
-static int	register_player(const char *ip, const char *coords, t_player *player)
+/* static int	register_player(const char *ip, const char *coords, t_player *player)
 {
 	char	**split;
 
@@ -59,10 +59,45 @@ static int	register_player(const char *ip, const char *coords, t_player *player)
 	
     playeraddr.sin_family = AF_INET;
     playeraddr.sin_port = htons( 50037 );              
-    playeraddr.sin_addr.s_addr = htonl( (uint32_t)ip_to_uns(player->ip) );
+    playeraddr.sin_addr.s_addr = inet_addr(player->ip);
 
 	//send test
 	if (sendto( player->socket, "Hi there!", 9, 0, (struct sockaddr *)&playeraddr, sizeof(struct sockaddr_in)) < 0 )
+		perror( "sendto failed" );
+
+	split = ft_split(coords, '-');
+	if (split == NULL)
+	{
+		perror( "bad coords" );
+		ft_freentf("2", split);
+		return (0);
+	}
+	player->pos.x = ft_atoi(split[0]);
+	player->pos.y = ft_atoi(split[1]);
+	player->pos.z = ft_atoi(split[2]);
+	ft_freentf("2", split);
+	printf("new player registered:\n");
+	player_specs(*player);
+	return (1);
+} */
+
+static int	register_player(const char *ip, int playersocket, const char *coords, t_player *player)
+{
+	char	**split;
+
+	printf("registering new player...\n");
+	usleep(1000000);
+	if (ip == NULL)
+	{
+		perror( "bad ip" );
+		return (0);
+	}
+	memmove(player->ip, ip, 15);
+	player->socket = playersocket;
+	printf("sendfd=%i\n", player->socket);
+
+	//send test
+	if (send( player->socket, "Hi there!", 9 , 0))
 		perror( "sendto failed" );
 
 	split = ft_split(coords, '-');
@@ -83,7 +118,7 @@ static int	register_player(const char *ip, const char *coords, t_player *player)
 
 /* single second player handling. 
 NOTE: player[0] is updated by minigame*/
-/* static  */int	handle_players(const char *buffer, t_recenv *recenv)
+/* static  *//* int	handle_players(const char *buffer, t_recenv *recenv)
 {
 	char			**split;
 
@@ -104,6 +139,26 @@ NOTE: player[0] is updated by minigame*/
 	printf("%-15s : %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
 	ft_freentf("2", split);
 	return (1);
+} */
+
+/* single second player handling. 
+NOTE: player[0] is updated by minigame*/
+static int	handle_players(const char *buffer, t_recenv *recenv)
+{
+	char			**split;
+
+	split = ft_split(buffer, ':');
+	if (split == NULL || recenv == NULL)
+		return (0);
+	if (is_ip(recenv->player[1].ip))
+	{
+		if (!update_player(split[0], split[1], &recenv->player[1]))
+			return (0);
+	}
+	printf("%-15s : %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
+	printf("%-15s : %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
+	ft_freentf("2", split);
+	return (1);
 }
 
 static void	*server_reciever(void *arg)
@@ -111,7 +166,7 @@ static void	*server_reciever(void *arg)
 	t_recenv	*recenv;
 
 	recenv = (t_recenv *)arg;
-	int recvfd;
+	int recvfd, playerfd[2];
     if ( (recvfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 )
 	{
         perror( "reciever socket failed" );
@@ -122,7 +177,7 @@ static void	*server_reciever(void *arg)
     struct sockaddr_in recvaddr;
     memset( &recvaddr, 0, sizeof(recvaddr) );
     recvaddr.sin_family = AF_INET;
-    recvaddr.sin_port = htons( 50037 );
+    recvaddr.sin_port = htons( 42042 );
 	recvaddr.sin_addr.s_addr = htonl( INADDR_ANY ); //host setup
 
 	//binding host reciever socket to ANY address
@@ -135,16 +190,34 @@ static void	*server_reciever(void *arg)
     struct sockaddr_in addrin;
     socklen_t addr_len = sizeof(struct sockaddr_in);
 	
-    char buffer[MAXLINE];
+	//listening for 1 connection
+	if ( listen(recvfd, 0) < 0 )
+	{
+		perror( "listen failed" );
+		return (NULL);
+	}
+	ft_printf("I head you!\n");
+	
+	//accepting 1 connection
+	playerfd[0] = accept(recvfd, (struct sockaddr *)&addrin, &addr_len);
+	if ( playerfd[0] < 0 )
+	{
+		perror( "accept failed" );
+		return (NULL);
+	}
+	ft_printf("connection accepted!!!\n");
+	register_player(inet_ntoa(addrin.sin_addr), playerfd[0], "0-0-0", &recenv->player[1]);
+
+	char buffer[MAXLINE];
     while ( 1 )
 	{
-		ft_printf("listening...\n");
-        int length = recvfrom( recvfd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&addrin, &addr_len );
+		ft_printf("talk to me baby...\n");
+        int length = recv( playerfd[0], buffer, sizeof(buffer) - 1, 0 );
         if ( length < 0 ) {
 			perror( "recvfrom failed" );
             break;
         }
-		printf( "%d bytes: '%s' from %s\n", length, buffer, inet_ntoa(addrin.sin_addr));
+		printf( "%d bytes: '%s' from %d\n", length, buffer, playerfd[0]);
 		handle_players(buffer, recenv);
 	}
 	close(recvfd);
