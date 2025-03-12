@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 12:58:50 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/12 13:07:19 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,12 +166,7 @@ int main( int argc, char *argv[], char *env[] )
     serveraddr.sin_port = htons( 50037 );              
     serveraddr.sin_addr.s_addr = htonl( ip_to_hostl(argv[1]) );  //my_pc=0x0a0c0307 //loclhost=0x7f000001
 
-	ip_to_hostl("127.0.0.1");
-
-	//replace-next
-	/* if (sendto( fd, "0x0a0c0307", 10, 0, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 ) {
-		perror( "sendto failed" );
-	} */
+	//ip_to_hostl("127.0.0.1");
 
 	t_player player;
 	memset(&player, 0, sizeof(t_player));
