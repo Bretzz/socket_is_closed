@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 23:47:31 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 23:49:01 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,10 @@ static void	*toutorial_reciever(void *arg)
 
     addr_size = sizeof their_addr;
     new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
+	printf("connection acceppted!\n");
+
+	struct sockaddr_in addrin;
+	socklen_t addr_len = sizeof(struct sockaddr_in);
 
 	char buffer[MAXLINE];
     while ( 1 )
