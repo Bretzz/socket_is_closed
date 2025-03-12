@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 23:49:01 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 23:50:11 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,13 +163,12 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 
 static void	*toutorial_reciever(void *arg)
 {
-	t_recenv	*recenv;
 	struct sockaddr_storage their_addr;
     socklen_t addr_size;
     struct addrinfo hints, *res;
     int sockfd, new_fd;
 	
-	recenv = (t_recenv *)arg;
+	(void)arg;
     // !! don't forget your error checking for these calls !!
 
     // first, load up address structs with getaddrinfo():
