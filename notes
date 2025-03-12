@@ -3,3 +3,6 @@ local IP:
 public IP: 
     dig -4 TXT +short o-o.myaddr.l.google.com @ns1.google.com
     curl ifconfig.me
+
+bug when hosting and connecting locally,
+from 127.0.0.1 and from local IP in the same session.
