@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 23:13:09 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 23:25:28 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,14 +167,14 @@ static void	*server_reciever(void *arg)
 
 	recenv = (t_recenv *)arg;
 	
-	/* struct addrinfo hints, *serv;
-
+	/* struct addrinfo hints, *recvinfo;
+	
 	memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_INET;  // use IPv4 or IPv6, whichever
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+    hints.ai_flags = 0; //AI_PASSIVE     // fill in my IP for me
 
-    getaddrinfo(NULL, "42042", &hints, &serv); */
+    getaddrinfo(NULL, "42042", &hints, &recvinfo); */
 	
 	int recvfd, playerfd[2];
     if ( (recvfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 )
@@ -189,9 +189,10 @@ static void	*server_reciever(void *arg)
     recvaddr.sin_family = AF_INET;
     recvaddr.sin_port = htons( 42042 );
 	recvaddr.sin_addr.s_addr = htonl( INADDR_ANY ); //host setup
+    //inet_pton(AF_INET, "127.0.0.1", &recvaddr);
 	
 	//binding host reciever socket to ANY address
-	if ( bind(recvfd, (struct sockaddr *)&recvaddr, sizeof(recvaddr)) < 0 )
+	if ( bind(recvfd, (struct sockaddr *)&recvaddr, sizeof(struct sockaddr_in)) < 0 )
 	{
 		perror( "reciever bind failed" );
 		return (NULL);
