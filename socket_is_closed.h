@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket_is_closed.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 00:07:22 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:45:45 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,5 +79,7 @@ typedef struct s_mlx
 }				t_mlx;		
 
 void	*minigame(void	*arg);
+int		ft_freentf(const char *s, ...);
+void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
 
 #endif

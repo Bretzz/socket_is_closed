@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerUDP.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:44 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/11 23:52:12 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 11:33:00 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,12 @@ int main( void )
 		{
 			memmove(&player.sockaddr, &addrin, addr_len);
 			memmove(&player.ip, inet_ntoa(addrin.sin_addr), 15);
-			memmove(&player.name, "pippo", 5);
+			memmove(&player.name, buffer + 11, 10);
 			player.socket = fd;
 			player_count++;
 			printf("a new player has arrived!!!\nPLAYER COUNT: %i, IP: %s, NAME: %s\n", player_count, player.ip, player.name);
 		}
-		if (strncmp(player.ip, inet_ntoa(addrin.sin_addr), 15) != 0) //adds a new client
+		if (strncmp(player.ip, inet_ntoa(addrin.sin_addr), 15) != 0)
 			printf("someone that isn't the player is trying to conntect!!!\n");
 		else
 			printf( "%d bytes: '%s' from: %s\n", length, buffer, player.name );

@@ -33,7 +33,7 @@ INKS			= -I$(LIBFT_DIR) -I$(MLX_DIR) -O3
 
 #source files (expected in the root folder)
 SRCS_DIR		=
-SRC_FILES		=
+SRC_FILES		= minigame.c ft_freentf.c
 SRCS			= $(addprefix $(SRCS_DIR), $(SRC_FILES))
 
 # Objects
@@ -91,7 +91,7 @@ minigame: minigame.c $(MLX) $(LIBFT)
 client: $(MLX) $(LIBFT) $(OBJS) $(CLIENT)
 #	@./$(SCRIPT)
 	@echo "${BOLD}compiling client...${RESET}"
-	@$(CC) $(CFLAGS) $(CLIENT) minigame.c $(MLX) $(LIBFT) $(LINKS) $(INKS) -o client \
+	@$(CC) $(CFLAGS) $(CLIENT) $(OBJS_DIR)* $(MLX) $(LIBFT) $(LINKS) $(INKS) -o client \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 server: $(MLX) $(LIBFT) $(OBJS) $(SERVER)
