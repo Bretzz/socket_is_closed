@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 02:10:36 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/12 02:15:04 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,11 +83,11 @@ static int	send_pos(t_player player)
 	coords[2] = ft_itoa((int)player.pos.z);
 	memset(pos, 0, 30);
 	ft_strlcpy(pos, player.ip, 16);
-	ft_strlcat(pos, "=", strlen(pos) + 2);
+	ft_strlcat(pos, ":", strlen(pos) + 2);
 	ft_strlcat(pos, coords[0], strlen(pos) + strlen(coords[0]) + 1);
-	ft_strlcat(pos, ":", strlen(pos) + 2);
+	ft_strlcat(pos, "-", strlen(pos) + 2);
 	ft_strlcat(pos, coords[1], strlen(pos) + strlen(coords[1]) + 1);
-	ft_strlcat(pos, ":", strlen(pos) + 2);
+	ft_strlcat(pos, "-", strlen(pos) + 2);
 	ft_strlcat(pos, coords[2], strlen(pos) + strlen(coords[2]) + 1);
 	if (sendto( player.socket, pos, 30, 0, (struct sockaddr *)&player.sockaddr, sizeof(struct sockaddr_in)) < 0 )
 		perror( "sendto failed" );
