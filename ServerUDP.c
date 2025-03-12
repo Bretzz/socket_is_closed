@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 22:16:12 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 22:20:06 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ static void	*server_reciever(void *arg)
 
 	recenv = (t_recenv *)arg;
 	int recvfd, playerfd[2];
-    if ( (recvfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 )
+    if ( (recvfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 )
 	{
         perror( "reciever socket failed" );
         return (NULL);
@@ -196,7 +196,7 @@ static void	*server_reciever(void *arg)
 		perror( "listen failed" );
 		return (NULL);
 	}
-	ft_printf("I head you!\n");
+	ft_printf("I'm listening...\n");
 	
 	//accepting 1 connection
 	playerfd[0] = accept(recvfd, (struct sockaddr *)&addrin, &addr_len);
@@ -205,7 +205,7 @@ static void	*server_reciever(void *arg)
 		perror( "accept failed" );
 		return (NULL);
 	}
-	ft_printf("connection accepted!!!\n");
+	ft_printf("I heard you!!!\n");
 	register_player(inet_ntoa(addrin.sin_addr), playerfd[0], "0-0-0", &recenv->player[1]);
 
 	char buffer[MAXLINE];
