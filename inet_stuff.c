@@ -6,43 +6,66 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:35:22 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 15:51:13 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 20:24:53 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket_is_closed.h"
 
-/* static int	express_sendto(char *ip)
-{	
-	int fd;
-    if ( (fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
-        perror("socket failed");
-        return 1;
-    }
-
-    struct sockaddr_in serveraddr;
-    memset( &serveraddr, 0, sizeof(serveraddr) );
-    serveraddr.sin_family = AF_INET;
-    serveraddr.sin_port = htons( 50037 );              
-    serveraddr.sin_addr.s_addr = htonl( (uint32_t)ip_to_uns(ip) );  //my_pc=0x0a0c0307 //loclhost=0x7f000001
-
-	if (ft_strncmp("127.0.0.1", ip, 9) != 0
-		&& ft_strncmp("10.12.1.10", ip, 9) != 0)
+int	is_ip(const char *s)
+{
+	int	i;
+	
+	if (s == NULL)
+		return (0);
+	i = 0;
+	while (i < 2)
 	{
-		if ( bind(fd, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 )
-		{
-			perror( "bind failed" );
-			return (1);
-		}
+		while (*s >= '0' && *s <= '9')
+			s++;
+		if (*(s++) != '.')
+			return (0);
+		i++;
 	}
+	while (*s >= '0' && *s <= '9')
+		s++;
+	if (*s != '\0')
+		return (0);
+	return (1);
+}
 
-	//ip_to_uns("127.0.0.1");
-	printf("fd=%i\n", fd);
+/* returns a pointer to the value of the IP var in the env */
+char	*get_locl_ip(char **env)
+{
+	int	i;
 
-	if (sendto( fd, "I see you...", 12, 0, (struct sockaddr *)&serveraddr, sizeof(struct sockaddr_in)) < 0 )
-		perror( "sendto failed" );
-	return (0);
-} */
+	if (env == NULL)
+		return (NULL);
+	i = 0;
+	while (env[i] != NULL)
+	{
+		if (!ft_strncmp("LOCAL_IP=", env[i], 9))
+			return (env[i] + 9);
+		i++;
+	}
+	return ("ip not found");
+}
+
+char	*get_serv_ip(char **env)
+{
+	int	i;
+
+	if (env == NULL)
+		return (NULL);
+	i = 0;
+	while (env[i] != NULL)
+	{
+		if (!ft_strncmp("SERVER_IP=", env[i], 10))
+			return (env[i] + 10);
+		i++;
+	}
+	return ("ip not found");
+}
 
 int server_duty(void)
 {

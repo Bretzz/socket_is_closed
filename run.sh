@@ -9,5 +9,5 @@ fi
 
 export LOCAL_IP SERVER_IP=$1
 env | grep _IP=
-make client && ./client
+make  && ./game
 #sed -i "s/IP/$IP_X/g" ClientUDP.c

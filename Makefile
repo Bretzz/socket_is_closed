@@ -33,7 +33,9 @@ INKS			= -I$(LIBFT_DIR) -I$(MLX_DIR) -O3
 
 #source files (expected in the root folder)
 SRCS_DIR		=
-SRC_FILES		= minigame.c ft_freentf.c convert_stuff.c
+SRC_FILES		= main.c \
+				ClientUDP.c ServerUDP.c \
+				minigame.c ft_freentf.c convert_stuff.c inet_stuff.c
 SRCS			= $(addprefix $(SRCS_DIR), $(SRC_FILES))
 
 # Objects
@@ -59,7 +61,7 @@ else
 	UNAME = Error
 endif
 
-all: client server
+all: game
 
 $(OBJS_DIR):
 	@mkdir -p $(OBJS_DIR)
@@ -86,6 +88,11 @@ $(LIBFT):
 minigame: minigame.c $(MLX) $(LIBFT)
 	@echo "${BOLD}compiling minigame...${RESET}"
 	@$(CC) $(CFLAGS) minigame.c $(MLX) $(LIBFT) $(LINKS) $(INKS) -o minigame \
+	&& echo "${LIGHT_GREEN}DONE${RESET}"
+
+game: $(MLX) $(LIBFT) $(OBJS)
+	@echo "${BOLD}compiling the game...${RESET}"
+	@$(CC) $(CFLAGS) $(OBJS_DIR)* $(MLX) $(LIBFT) $(LINKS) -o game \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 client: $(MLX) $(LIBFT) $(OBJS) $(CLIENT)

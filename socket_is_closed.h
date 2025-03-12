@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 17:28:01 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 20:25:14 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ typedef struct s_player
 	struct sockaddr_in	sockaddr;
 	int					socket;
 	t_point				pos;
+	int					num;
 }				t_player;
 
 //mlx img variables
@@ -76,6 +77,7 @@ typedef struct s_mlx
 	void			*win;
 	t_img			img;
 	t_player		*player;
+	int				index;
 }				t_mlx;		
 
 typedef	struct s_recenv
@@ -86,10 +88,29 @@ typedef	struct s_recenv
 	unsigned int	max_players;
 }				t_recenv;
 
-void			*minigame(void	*arg);
+//client
+
+int client_routine( int argc, char *argv[], char *env[]);
+
+//server
+
+int server_routine( int argc, char *argv[], char *env[]);
+
+//minigame
+
+int				minigame(int my_pos, t_player *player);
+
 int				player_alive(t_player player);
+void			player_specs(t_player player);
 
 int 			server_duty(void);
+
+//awesome functions
+
+char	*get_locl_ip(char **env);
+char	*get_serv_ip(char **env);
+
+int		is_ip(const char *s);
 
 //stolen cool stuff
 

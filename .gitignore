@@ -3,6 +3,7 @@
 **/*.a
 **/obj/*
 minilibx*
-minigame
 server
 client
+minigame
+game

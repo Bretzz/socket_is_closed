@@ -6,11 +6,20 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 17:59:22 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 19:51:09 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket_is_closed.h"
+
+void	player_specs(t_player player)
+{
+	printf("player ip    : %s\n", player.ip);
+	printf("player name  : %s\n", player.name);
+	printf("player sendfd: %d\n", player.socket);
+	printf("player num   : %d\n", player.num);
+	printf("player pos   : %d-%d-%d\n", (int)player.pos.x, (int)player.pos.y, (int)player.pos.z);
+}
 
 int	player_alive(t_player player)
 {
@@ -38,7 +47,7 @@ static int	juice_the_pc(t_mlx *mlx)
 		return (1);
 	mlx->win_x = MLX_WIN_X;
 	mlx->win_y = MLX_WIN_Y;
-	mlx->win = mlx_new_window(mlx->mlx, MLX_WIN_X, MLX_WIN_Y, mlx->player->ip);
+	mlx->win = mlx_new_window(mlx->mlx, MLX_WIN_X, MLX_WIN_Y, mlx->player[mlx->index].ip);
 	if (!mlx->win)
 	{
 		free(mlx->mlx);
@@ -85,6 +94,7 @@ static int	put_board(t_mlx *mlx)
 	mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img.img, 0, 0);
 	//ft_printf("ccc\n");
 	mlx_destroy_image(mlx->mlx, mlx->img.img);
+	//printf("the board is put\n");
 	return (1);
 }
 
@@ -93,7 +103,7 @@ static int	send_pos(t_player player)
 	char	pos[30];
 	char	*coords[3];
 	
-	if (player.ip[0] == '\0' || !ft_strncmp("host", player.ip, 4))
+	if (player.ip[0] == '\0')
 		return (0);
 	coords[0] = ft_itoa((int)player.pos.x);
 	coords[1] = ft_itoa((int)player.pos.y);
@@ -121,19 +131,24 @@ static int	handle_heypress(int keysym, void *arg)
 	if (keysym == XK_Escape || keysym == 53)
 		clean_exit(mlx);
 	else if (keysym == XK_Down || keysym == 125)
-		mlx->player[0].pos.y += 10;
+		mlx->player[mlx->index].pos.y += 10;
 	else if (keysym == XK_Up || keysym == 126)
-		mlx->player[0].pos.y -= 10;
+		mlx->player[mlx->index].pos.y -= 10;
 	else if (keysym == XK_Left || keysym == 123)
-		mlx->player[0].pos.x -= 10;
+		mlx->player[mlx->index].pos.x -= 10;
 	else if (keysym == XK_Right || keysym == 124)
-		mlx->player[0].pos.x += 10;
+		mlx->player[mlx->index].pos.x += 10;
 	else
 		printf("Key Pressed: %i\n", keysym);
 	put_board(mlx);
+	//player_specs(mlx->player[0]); player_specs(mlx->player[1]);
 	i = 0;
 	while (i < 2)
-		send_pos(mlx->player[i++]);
+	{
+		if (i != mlx->index)
+			send_pos(mlx->player[i]);
+		i++;
+	}
 	return (0);
 }
 
@@ -149,14 +164,15 @@ static int	update_frame(t_mlx *mlx)
 	return (0);
 }
 
-void	*minigame(void	*arg)
+int	minigame(int my_pos, t_player *player)
 {
 	t_mlx	mlx;
 
 	memset(&mlx, 0, sizeof(t_mlx));
-	mlx.player = (t_player *)arg;
+	mlx.player = player;
+	mlx.index = my_pos;
 	if (juice_the_pc(&mlx))
-		return (NULL);
+		return (1);
 
 	put_board(&mlx);
 	
@@ -164,7 +180,7 @@ void	*minigame(void	*arg)
 	mlx_hook(mlx.win, DestroyNotify, StructureNotifyMask, &clean_exit, &mlx);
 	mlx_loop_hook(mlx.mlx, &update_frame, &mlx);
 	mlx_loop(mlx.mlx);
-	return (NULL);
+	return (0);
 }
 
 /* int	main()
