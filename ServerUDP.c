@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 23:53:24 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 00:04:02 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,68 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 	return (1);
 }
 
-static void	*toutorial_reciever(void *arg)
+void	*toutorial_reciever2(void *arg)
+{
+	int server_fd, new_socket;
+    struct sockaddr_in address;
+    int opt = 1;
+    socklen_t addrlen = sizeof(address);
+
+	(void)arg;
+    // Creating socket file descriptor
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Forcefully attaching socket to the port 8080
+    if (setsockopt(server_fd, SOL_SOCKET,
+                   SO_REUSEADDR | SO_REUSEPORT, &opt,
+                   sizeof(opt))) {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    // Forcefully attaching socket to the port 8080
+    if (bind(server_fd, (struct sockaddr*)&address,
+             sizeof(address))
+        < 0) {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+    if (listen(server_fd, 3) < 0) {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
+    if ((new_socket
+         = accept(server_fd, (struct sockaddr*)&address,
+                  &addrlen))
+        < 0) {
+        perror("accept");
+        exit(EXIT_FAILURE);
+    }
+
+	struct sockaddr_in addrin;
+	socklen_t addr_len = sizeof(struct sockaddr_in);
+
+	char buffer[MAXLINE] = { 0 };
+    while ( 1 )
+	{
+		ft_printf("talk to me baby...\n");
+        int length = recvfrom( new_socket, buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&addrin, &addr_len );
+        if ( length < 0 ) {
+			perror( "recvfrom failed" );
+            break;
+        }
+		printf( "%d bytes: '%s' from %s\n", length, buffer, inet_ntoa(addrin.sin_addr));
+	}
+	return (NULL);
+}
+
+void	*toutorial_reciever(void *arg)
 {
 	struct sockaddr_storage their_addr;
     socklen_t addr_size;
@@ -174,7 +235,7 @@ static void	*toutorial_reciever(void *arg)
     // first, load up address structs with getaddrinfo():
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_INET;  // use IPv4 or IPv6, whichever
+    hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
 
@@ -183,8 +244,10 @@ static void	*toutorial_reciever(void *arg)
     // make a socket, bind it, and listen on it:
 
     sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    bind(sockfd, res->ai_addr, res->ai_addrlen);
-    listen(sockfd, 10);
+    if (bind(sockfd, res->ai_addr, res->ai_addrlen))
+		perror( "bind fail" );
+    if (listen(sockfd, 10))
+		perror( "listen fail" );
 	printf("listening...\n");
 
     // now accept an incoming connection:
@@ -314,7 +377,7 @@ int server_routine( int argc, char *argv[], char *env[])
 	recenv.max_players = 2;
 
     //reciever
-	if (pthread_create(&tid, NULL, &toutorial_reciever, &recenv) < 0)
+	if (pthread_create(&tid, NULL, &toutorial_reciever2, &recenv) < 0)
 		perror( "reciever launch failed" );
 
     minigame(0, &player[0]);

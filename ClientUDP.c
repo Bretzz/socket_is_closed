@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 23:54:27 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 00:05:31 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,51 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 	return (NULL);
 }
 
-static void toutorial_init(t_player *player, char **env)
+void toutorial_init2(t_player *player, char **env)
+{
+	int status, valread, client_fd;
+    struct sockaddr_in serv_addr;
+    char* hello = "Hello from client";
+    char buffer[1024] = { 0 };
+	
+    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("\n Socket creation error \n");
+        return -1;
+    }
+
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+
+    // Convert IPv4 and IPv6 addresses from text to binary
+    // form
+    if (inet_pton(AF_INET, get_serv_ip(env), &serv_addr.sin_addr)
+        <= 0) {
+        printf(
+            "\nInvalid address/ Address not supported \n");
+        return ;
+    }
+
+    if ((status
+         = connect(client_fd, (struct sockaddr*)&serv_addr,
+                   sizeof(serv_addr)))
+        < 0) {
+        printf("\nConnection Failed \n");
+        return ;
+    }
+    send(client_fd, hello, strlen(hello), 0);
+    printf("Hello message sent\n");
+    valread = read(client_fd, buffer,
+                   1024 - 1); // subtract 1 for the null
+                              // terminator at the end
+    printf("%s\n", buffer);
+
+    // closing the connected socket
+    close(client_fd);
+    player->num = 1;
+	printf("init done!\n");
+}
+
+void toutorial_init(t_player *player, char **env)
 {
 
 	struct addrinfo hints, *res;
@@ -127,38 +171,6 @@ static void toutorial_init(t_player *player, char **env)
 	printf("sending?\n");
 	if (send( sockfd, get_locl_ip(env), 15, 0 ) < 0 )
 		perror( "sendto failed" ); 
-
-	/* struct addrinfo hints, *serv;
-	
-	// first, load up address structs with getaddrinfo():
-	
-	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	
-	getaddrinfo(get_serv_ip(env), "42042", &hints, &serv);
-	
-	// make a socket:
-	
-	int connfd;
-    if ( (connfd = socket(serv->ai_family, serv->ai_socktype, serv->ai_protocol)) < 0 )
-	{
-        perror( "socket failed" );
-        return ;
-    }
-	printf("connfd=%i\n", connfd);
-
-	//connecting to the server
-	if ( connect(connfd, (struct sockaddr *)&serv->ai_addr, serv->ai_addrlen) < 0 )
-	{
-		perror( "connect failed" );
-		return ;
-	}
-	printf("connected to the server\n");
-
-	//send test
-	if (sendto( connfd, get_locl_ip(env), 15, 0, (struct sockaddr *)&serv->ai_addr, sizeof(struct sockaddr_in)) < 0 )
-		perror( "sendto failed" ); */
 		
 	/* memmove(&player->sockaddr, &serv->ai_addr, sizeof(struct sockaddr_in));
 	memmove(&player->ip, get_locl_ip(env), 15);
