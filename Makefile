@@ -33,7 +33,7 @@ INKS			= -I$(LIBFT_DIR) -I$(MLX_DIR) -O3
 
 #source files (expected in the root folder)
 SRCS_DIR		=
-SRC_FILES		= minigame.c ft_freentf.c
+SRC_FILES		= minigame.c ft_freentf.c convert_stuff.c
 SRCS			= $(addprefix $(SRCS_DIR), $(SRC_FILES))
 
 # Objects
@@ -75,11 +75,11 @@ $(MLX_DIR):
 	&& ls $(MLX_DIR) || mv `ls | grep $(MLX_DIR)` $(MLX_DIR) \
 	&& $(MAKE) -C $(MLX_DIR)
 
-$(MLX): $(MLX_DIR)
+$(MLX):
 	@rm -f $(MLX_DIR)/libmlx.a
 	@$(MAKE) -C $(MLX_DIR)
 
-$(LIBFT): $(LIBFT_DIR)
+$(LIBFT):
 	@echo "${BOLD}creating libft...${RESET}"
 	@$(MAKE) -C $(LIBFT_DIR) --quiet
 
@@ -96,7 +96,7 @@ client: $(MLX) $(LIBFT) $(OBJS) $(CLIENT)
 
 server: $(MLX) $(LIBFT) $(OBJS) $(SERVER)
 	@echo "${BOLD}compiling server...${RESET}"
-	@$(CC) $(CFLAGS) $(SERVER) $(MLX) $(LIBFT) $(LINKS) $(INKS) -o server \
+	@$(CC) $(CFLAGS) $(SERVER) inet_stuff.c convert_stuff.c ft_freentf.c $(MLX) $(LIBFT) $(LINKS) $(INKS) -o server \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 clean:

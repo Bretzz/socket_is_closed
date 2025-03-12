@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket_is_closed.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 12:45:45 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/12 17:28:01 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,32 @@ typedef struct s_mlx
 	void			*mlx;
 	void			*win;
 	t_img			img;
-	t_player		player;
+	t_player		*player;
 }				t_mlx;		
 
-void	*minigame(void	*arg);
-int		ft_freentf(const char *s, ...);
-void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
+typedef	struct s_recenv
+{
+	int				socket_out;
+	char			**env;
+	t_player		*player;
+	unsigned int	max_players;
+}				t_recenv;
+
+void			*minigame(void	*arg);
+int				player_alive(t_player player);
+
+int 			server_duty(void);
+
+//stolen cool stuff
+
+int				ft_freentf(const char *s, ...);
+void			*ft_realloc(void *ptr, size_t old_size, size_t new_size);
+
+//convert stuff
+
+unsigned int	ip_to_uns(const char *ip);
+
+int				ft_atohexi(const char *nptr);
+char			*ft_itohex_buff(char *buff, unsigned int nb);
 
 #endif

@@ -1,9 +1,13 @@
 #!/bin/bash
 
-IP=$(ipconfig getifaddr en0)
+if [ "`uname`" = "Linux" ]; then
+	LOCAL_IP=$(hostname -i);
+else
+	LOCAL_IP=$(ipconfig getifaddr en0);
+fi
+#IP=$(ipconfig getifaddr en0 || hostname -i)
 
-export IP
-#env | grep IP
-echo $IP
-./client $1
+export LOCAL_IP SERVER_IP=$1
+env | grep _IP=
+make client && ./client
 #sed -i "s/IP/$IP_X/g" ClientUDP.c
