@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 23:25:28 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 23:47:31 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,52 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 	return (1);
 }
 
-static void	*server_reciever(void *arg)
+static void	*toutorial_reciever(void *arg)
+{
+	t_recenv	*recenv;
+	struct sockaddr_storage their_addr;
+    socklen_t addr_size;
+    struct addrinfo hints, *res;
+    int sockfd, new_fd;
+	
+	recenv = (t_recenv *)arg;
+    // !! don't forget your error checking for these calls !!
+
+    // first, load up address structs with getaddrinfo():
+
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+    getaddrinfo(NULL, "42042", &hints, &res);
+
+    // make a socket, bind it, and listen on it:
+
+    sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    bind(sockfd, res->ai_addr, res->ai_addrlen);
+    listen(sockfd, 1);
+
+    // now accept an incoming connection:
+
+    addr_size = sizeof their_addr;
+    new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
+
+	char buffer[MAXLINE];
+    while ( 1 )
+	{
+		ft_printf("talk to me baby...\n");
+        int length = recvfrom( new_fd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&addrin, &addr_len );
+        if ( length < 0 ) {
+			perror( "recvfrom failed" );
+            break;
+        }
+		printf( "%d bytes: '%s' from %s\n", length, buffer, inet_ntoa(addrin.sin_addr));
+	}
+	return (NULL);
+}
+
+/* static  */void	*server_reciever(void *arg)
 {
 	t_recenv	*recenv;
 
@@ -265,7 +310,7 @@ int server_routine( int argc, char *argv[], char *env[])
 	recenv.max_players = 2;
 
     //reciever
-	if (pthread_create(&tid, NULL, &server_reciever, &recenv) < 0)
+	if (pthread_create(&tid, NULL, &toutorial_reciever, &recenv) < 0)
 		perror( "reciever launch failed" );
 
     minigame(0, &player[0]);
