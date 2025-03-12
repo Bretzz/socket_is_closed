@@ -6,3 +6,5 @@ public IP:
 
 bug when hosting and connecting locally,
 from 127.0.0.1 and from local IP in the same session.
+
+NICE GUIDE: https://beej.us/guide/bgnet/html/split/
