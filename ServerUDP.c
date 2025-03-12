@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 22:20:06 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 22:32:00 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,7 +191,7 @@ static void	*server_reciever(void *arg)
     socklen_t addr_len = sizeof(struct sockaddr_in);
 	
 	//listening for 1 connection
-	if ( listen(recvfd, 0) < 0 )
+	if ( listen(recvfd, 0) < 1 )
 	{
 		perror( "listen failed" );
 		return (NULL);
@@ -212,12 +212,12 @@ static void	*server_reciever(void *arg)
     while ( 1 )
 	{
 		ft_printf("talk to me baby...\n");
-        int length = recv( playerfd[0], buffer, sizeof(buffer) - 1, 0 );
+        int length = recvfrom( playerfd[0], buffer, sizeof(buffer) - 1, 0, (struct sockaddr *)&addrin, &addr_len );
         if ( length < 0 ) {
 			perror( "recvfrom failed" );
             break;
         }
-		printf( "%d bytes: '%s' from %d\n", length, buffer, playerfd[0]);
+		printf( "%d bytes: '%s' from %s\n", length, buffer, inet_ntoa(addrin.sin_addr));
 		handle_players(buffer, recenv);
 	}
 	close(recvfd);

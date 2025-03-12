@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 19:51:09 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 22:28:52 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	player_specs(t_player player)
 {
 	printf("player ip    : %s\n", player.ip);
 	printf("player name  : %s\n", player.name);
-	printf("player sendfd: %d\n", player.socket);
+	printf("player socket: %d\n", player.socket);
 	printf("player num   : %d\n", player.num);
 	printf("player pos   : %d-%d-%d\n", (int)player.pos.x, (int)player.pos.y, (int)player.pos.z);
 }
