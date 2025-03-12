@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 21:10:30 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 21:21:46 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static int	register_player(const char *ip, const char *coords, t_player *player)
 	char	**split;
 
 	printf("registering new player...\n");
+	usleep(1000000);
 	if (ip == NULL)
 	{
 		perror( "bad ip" );
@@ -99,8 +100,8 @@ NOTE: player[0] is updated by minigame*/
 		if (!update_player(split[0], split[1], &recenv->player[1]))
 			return (0);
 	}
-	printf("%s at %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
-	printf("%s at %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
+	printf("%-15s : %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
+	printf("%-15s : %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
 	ft_freentf("2", split);
 	return (1);
 }
@@ -182,7 +183,7 @@ int server_routine( int argc, char *argv[], char *env[])
 	if (pthread_create(&tid, NULL, &server_reciever, &recenv) < 0)
 		perror( "reciever launch failed" );
 
-    //minigame(0, &player[0]);
+    minigame(0, &player[0]);
 
 	pthread_join(tid, NULL);
     //close( sendfd );

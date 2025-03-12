@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 20:20:27 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 21:24:42 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,13 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 	recvaddr.sin_addr.s_addr = htonl( (uint32_t)ip_to_uns(get_serv_ip(recenv->env)) ); //client setup
 
 	//binding reciever socket to server address
-	if ( bind(recvfd, (struct sockaddr *)&recvaddr, sizeof(recvaddr)) < 0 )
+	if (1/* ft_strncmp("127.0.0.1", get_serv_ip(recenv->env), 9) != 0 */)
 	{
-		perror( "reciever bind failed" );
-		return (NULL);
+		if ( bind(recvfd, (struct sockaddr *)&recvaddr, sizeof(recvaddr)) < 0 )
+		{
+			perror( "reciever bind failed" );
+			return (NULL);
+		}
 	}
 
     struct sockaddr_in addrin;
@@ -149,7 +152,7 @@ int client_routine( int argc, char *argv[], char *env[])
 	if (pthread_create(&tid, NULL, &client_reciever, &recenv) < 0)
 		perror( "reciever launch failed" );
 
-    //minigame(1, &player[0]);
+    minigame(1, &player[0]);
 
 	pthread_join(tid, NULL);
 	return (0);
