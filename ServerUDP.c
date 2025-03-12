@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 23:50:11 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 23:53:24 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,17 +174,18 @@ static void	*toutorial_reciever(void *arg)
     // first, load up address structs with getaddrinfo():
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
+    hints.ai_family = AF_INET;  // use IPv4 or IPv6, whichever
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
 
-    getaddrinfo(NULL, "42042", &hints, &res);
+    getaddrinfo(NULL, "8080", &hints, &res);
 
     // make a socket, bind it, and listen on it:
 
     sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     bind(sockfd, res->ai_addr, res->ai_addrlen);
-    listen(sockfd, 1);
+    listen(sockfd, 10);
+	printf("listening...\n");
 
     // now accept an incoming connection:
 

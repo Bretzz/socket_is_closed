@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 23:44:48 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/12 23:53:29 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ static void toutorial_init(t_player *player, char **env)
 	hints.ai_socktype = SOCK_STREAM;
 
 	printf("addrinfo?\n");
-	getaddrinfo("www.example.com", "3490", &hints, &res);
+	getaddrinfo("www.example.com", "8080", &hints, &res);
 
 	// make a socket:
 
