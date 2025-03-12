@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 00:06:45 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 00:07:38 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ void toutorial_init2(t_player *player, char **env)
     valread = read(client_fd, buffer,
                    1024 - 1); // subtract 1 for the null
                               // terminator at the end
-    printf("%s\n", buffer);
+    printf("%d bytes: %s\n", valread, buffer);
 
     // closing the connected socket
     close(client_fd);
