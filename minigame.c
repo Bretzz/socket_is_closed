@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 12:13:51 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 12:15:24 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,13 +186,13 @@ static int	handle_heypress(int keysym, void *arg)
 	mlx = (t_mlx *)arg;
 	if (keysym == XK_Escape || keysym == 53)
 		clean_exit(mlx);
-	else if (keysym == XK_Down || keysym == 125)
+	else if (keysym == XK_Down || keysym == XK_s || keysym == 125)
 		mlx->player[mlx->index].pos.y += 10;
-	else if (keysym == XK_Up || keysym == 126)
+	else if (keysym == XK_Up || keysym == XK_w || keysym == 126)
 		mlx->player[mlx->index].pos.y -= 10;
-	else if (keysym == XK_Left || keysym == 123)
+	else if (keysym == XK_Left || keysym == XK_a || keysym == 123)
 		mlx->player[mlx->index].pos.x -= 10;
-	else if (keysym == XK_Right || keysym == 124)
+	else if (keysym == XK_Right || keysym == XK_d || keysym == 124)
 		mlx->player[mlx->index].pos.x += 10;
 	else
 		printf("Key Pressed: %i\n", keysym);
