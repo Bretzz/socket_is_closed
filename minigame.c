@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minigame.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 22:28:52 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 02:28:42 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,18 +98,18 @@ static int	put_board(t_mlx *mlx)
 	return (1);
 }
 
-static int	send_pos(t_player player)
+static int	send_pos(t_point my_pos, const char *my_ip, t_player player)
 {
 	char	pos[30];
 	char	*coords[3];
 	
 	if (player.ip[0] == '\0')
 		return (0);
-	coords[0] = ft_itoa((int)player.pos.x);
-	coords[1] = ft_itoa((int)player.pos.y);
-	coords[2] = ft_itoa((int)player.pos.z);
+	coords[0] = ft_itoa((int)my_pos.x);
+	coords[1] = ft_itoa((int)my_pos.y);
+	coords[2] = ft_itoa((int)my_pos.z);
 	memset(pos, 0, 30);
-	ft_strlcpy(pos, player.ip, 16);
+	ft_strlcpy(pos, my_ip, 16);
 	ft_strlcat(pos, ":", strlen(pos) + 2);
 	ft_strlcat(pos, coords[0], strlen(pos) + strlen(coords[0]) + 1);
 	ft_strlcat(pos, "-", strlen(pos) + 2);
@@ -146,7 +146,7 @@ static int	handle_heypress(int keysym, void *arg)
 	while (i < 2)
 	{
 		if (i != mlx->index)
-			send_pos(mlx->player[i]);
+			send_pos(mlx->player[mlx->index].pos, mlx->player[mlx->index].ip, mlx->player[i]);
 		i++;
 	}
 	return (0);

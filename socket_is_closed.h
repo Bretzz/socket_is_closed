@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 01:39:48 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/13 02:59:11 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@
 # include <pthread.h>
 
 # define MYPORT 42042
-# define MAXLINE 1000 
+# define MAXLINE 1024 
 
 # define MLX_WIN_X 500
 # define MLX_WIN_Y 500

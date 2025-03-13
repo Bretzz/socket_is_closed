@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   inet_stuff.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:35:22 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 20:24:53 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 02:51:27 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	is_ip(const char *s)
 	if (s == NULL)
 		return (0);
 	i = 0;
-	while (i < 2)
+	while (i < 3)
 	{
 		while (*s >= '0' && *s <= '9')
 			s++;
