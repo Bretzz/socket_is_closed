@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket_is_closed.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 23:00:08 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 01:39:48 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 
 # include <pthread.h>
 
-# define PORT 8080
+# define MYPORT 42042
 # define MAXLINE 1000 
 
 # define MLX_WIN_X 500

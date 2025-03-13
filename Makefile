@@ -95,6 +95,16 @@ game: $(MLX) $(LIBFT) $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS_DIR)* $(MLX) $(LIBFT) $(LINKS) -o game \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
+miniserver: miniserver.c
+	@echo "${BOLD}compiling miniserver...${RESET}"
+	@$(CC) $(CFLAGS) miniserver.c $(LINKS) $(INKS) -o miniserver \
+	&& echo "${LIGHT_GREEN}DONE${RESET}"
+
+miniclient: miniclient.c
+	@echo "${BOLD}compiling miniclient...${RESET}"
+	@$(CC) $(CFLAGS) miniclient.c $(LINKS) $(INKS) -o miniclient \
+	&& echo "${LIGHT_GREEN}DONE${RESET}"
+
 client: $(MLX) $(LIBFT) $(OBJS) $(CLIENT)
 #	@./$(SCRIPT)
 	@echo "${BOLD}compiling client...${RESET}"
