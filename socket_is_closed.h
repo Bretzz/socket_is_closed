@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket_is_closed.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 02:59:11 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/13 11:58:37 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 # include "mlx.h"
 # include <X11/X.h>
 # include <X11/keysym.h>
+# include <math.h>
 
 //libft
 # include "libft.h"
@@ -57,6 +58,7 @@ typedef struct s_player
 	struct sockaddr_in	sockaddr;
 	int					socket;
 	t_point				pos;
+	t_point				target;
 	int					num;
 }				t_player;
 

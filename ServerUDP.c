@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerUDP.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 02:56:46 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/13 11:05:53 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,15 +158,15 @@ void	*server_reciever(void *arg)
 
 	struct sockaddr_in addrin;
 	
-    while ( 1 )
+	while ( 1 )
 	{
 		memset(buffer, 0, MAXLINE);
 		ft_printf("talk to me baby...\n");
-        int length = recvfrom( connfd, buffer, MAXLINE - 1, 0, (struct sockaddr *)&addrin, &addrlen );
-        if ( length < 0 ) {
+		int length = recvfrom( connfd, buffer, MAXLINE - 1, 0, (struct sockaddr *)&addrin, &addrlen );
+		if ( length < 0 ) {
 			perror( "recvfrom failed" );
-            break;
-        }
+			break;
+		}
 		printf( "%d bytes: '%s' from %s\n", length, buffer, inet_ntoa(addrin.sin_addr));
 		handle_players(buffer, recenv);
 	}
@@ -201,13 +201,13 @@ int server_routine( int argc, char *argv[], char *env[])
 	recenv.player = player;
 	recenv.max_players = 2;
 
-    //reciever
+	//reciever
 	if (pthread_create(&tid, NULL, &server_reciever, &recenv) < 0)
 		perror( "reciever launch failed" );
 
-    minigame(0, &player[0]);
+	minigame(0, &player[0]);
 
 	pthread_join(tid, NULL);
-    //close( sendfd );
+	//close( sendfd );
 	return (0);
 }

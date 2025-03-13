@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minigame.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 02:28:42 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/13 12:13:51 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ void	player_specs(t_player player)
 	printf("player socket: %d\n", player.socket);
 	printf("player num   : %d\n", player.num);
 	printf("player pos   : %d-%d-%d\n", (int)player.pos.x, (int)player.pos.y, (int)player.pos.z);
+	printf("player target: %d-%d-%d\n", (int)player.target.x, (int)player.target.y, (int)player.target.z);
+
 }
 
 int	player_alive(t_player player)
@@ -73,6 +75,51 @@ static void	my_pixel_put(void *my_struct, int x, int y, float z, unsigned int co
 	*(unsigned int *)dst = color;
 }
 
+
+static int	put_line(t_mlx *mlx, t_point p, t_point t, unsigned int color)
+{
+	int dx =  fabsf (t.x - p.x), sx = p.x < t.x ? 1 : -1;
+	int dy = -fabsf (t.y - p.y), sy = p.y < t.y ? 1 : -1; 
+	int err = dx + dy, e2; /* error value e_xy */
+ 
+	for (;;){  /* loop */
+		my_pixel_put(mlx, p.x, p.y, 0, color);
+		if (p.x == t.x && p.y == t.y) break;
+		e2 = 2 * err;
+		if (e2 >= dy) { err += dy; p.x += sx; } /* e_xy+e_x > 0 */
+		if (e2 <= dx) { err += dx; p.y += sy; } /* e_xy+e_y < 0 */
+	}
+	return (1);
+}
+
+static int	handle_player(t_player *player, t_mlx *mlx)
+{
+	static int lineframes[2];
+	
+	if (player->ip[0] != '\0')
+	{
+		my_pixel_put(mlx, player->pos.x, player->pos.y, player->pos.z, 0xFFFFFF);
+		if (player->target.x || player->target.y)
+		{
+			//player_specs(*player);
+			if (lineframes[player->num] == 10)
+			{
+				memset(&player->target, 0, sizeof(t_point));
+				lineframes[player->num] = 0;
+				return (1);
+			}
+			put_line(mlx, player->pos, player->target, 0xFFFFFF);
+			lineframes[player->num]++;
+			/* player->target.x = 0;
+			player->target.y = 0; */
+			//memset(&player->target, 0, sizeof(t_point));
+			//player_specs(*player);
+		}
+		return (1);
+	}
+	return (0);
+}
+
 static int	put_board(t_mlx *mlx)
 {
 	int	i;
@@ -85,11 +132,7 @@ static int	put_board(t_mlx *mlx)
 
 	i = 0;
 	while (i < 2)
-	{
-		if (mlx->player[i].ip[0] != '\0')
-			my_pixel_put(mlx, mlx->player[i].pos.x, mlx->player[i].pos.y, mlx->player[i].pos.z, 0xFFFFFF);
-		i++;
-	}
+		handle_player(&mlx->player[i++], mlx);
 
 	mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img.img, 0, 0);
 	//ft_printf("ccc\n");
@@ -119,6 +162,19 @@ static int	send_pos(t_point my_pos, const char *my_ip, t_player player)
 	if (sendto( player.socket, pos, 30, 0, (struct sockaddr *)&player.sockaddr, sizeof(struct sockaddr_in)) < 0 )
 		perror( "sendto failed" );
 	free(coords[0]); free(coords[1]); free(coords[2]);
+	return (0);
+}
+
+static int	handle_mouse(int keysym, int x, int y, t_mlx *mlx)
+{
+	if (keysym == 1) // keysym == 1
+	{
+		mlx->player[mlx->index].target.x = x;
+		mlx->player[mlx->index].target.y = y;
+		printf("RIGHT CLICK!!!\n");
+	}
+	else
+		printf("Mouse thing N. %d\n", keysym);
 	return (0);
 }
 
@@ -178,6 +234,7 @@ int	minigame(int my_pos, t_player *player)
 	
 	mlx_hook(mlx.win, KeyPress, KeyPressMask, &handle_heypress, &mlx);
 	mlx_hook(mlx.win, DestroyNotify, StructureNotifyMask, &clean_exit, &mlx);
+	mlx_mouse_hook(mlx.win, &handle_mouse, &mlx);
 	mlx_loop_hook(mlx.mlx, &update_frame, &mlx);
 	mlx_loop(mlx.mlx);
 	return (0);

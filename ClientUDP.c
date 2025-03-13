@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientUDP.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 02:38:36 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/13 11:04:48 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,15 +59,15 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 
 	recenv = (t_recenv *)arg;
 	
-    char buffer[MAXLINE];
-    while ( 1 )
+	char buffer[MAXLINE];
+	while ( 1 )
 	{
 		ft_printf("talk to me...\n");
-        int length = recv( recenv->player[0].socket, buffer, MAXLINE - 1, 0 );
-        if ( length < 0 ) {
+		int length = recv( recenv->player[0].socket, buffer, MAXLINE - 1, 0 );
+		if ( length < 0 ) {
 			perror( "recv failed" );
-            break;
-        }
+			break;
+		}
 		printf( "%d bytes: '%s' from Server\n", length, buffer);
 		handle_players(buffer, recenv);
 	}
@@ -78,36 +78,36 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 static int client_player_init(t_player *player, char **env)
 {
 	int servfd;
-    
-    if ((servfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	
+	if ((servfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		perror("socket failure");
 		return (0);
 	}
-    
-    struct sockaddr_in serveraddr;
+	
+	struct sockaddr_in serveraddr;
 
 	memset(&serveraddr, 0, sizeof(struct sockaddr_in));
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_port = htons ( MYPORT );
 	serveraddr.sin_addr.s_addr = inet_addr(get_serv_ip(env)); //192.168.1.5 //INADDR_ANY
 
-    if (connect(servfd, (struct sockaddr *)&serveraddr, sizeof(struct sockaddr)))
-    {
+	if (connect(servfd, (struct sockaddr *)&serveraddr, sizeof(struct sockaddr)))
+	{
 		perror("connectin failed");
 		return (0);
 	}
-    printf("connection accepted!!!\n");
+	printf("connection accepted!!!\n");
 
-    if (send(servfd, get_locl_ip(env), 15, 0) < 0)
-        perror("send failure");
+	if (send(servfd, get_locl_ip(env), 15, 0) < 0)
+		perror("send failure");
 
-    int len;
-    char buffer[MAXLINE] = { 0 };
-    if ((len = recv(servfd, buffer, MAXLINE - 1, 0)) < 0)
-        perror("recv failure");
-    else
-        printf("%d bytes: '%s' from Server\n", len, buffer);
+	int len;
+	char buffer[MAXLINE] = { 0 };
+	if ((len = recv(servfd, buffer, MAXLINE - 1, 0)) < 0)
+		perror("recv failure");
+	else
+		printf("%d bytes: '%s' from Server\n", len, buffer);
 
 	//player init
 	memmove(&player[1].ip, get_locl_ip(env), 15);
@@ -117,7 +117,7 @@ static int client_player_init(t_player *player, char **env)
 	memmove(&player[0].ip, "host", 4);
 	memmove(&player[0].name, "host", 4);
 	player->socket = servfd;
-    player->num = 1;
+	player->num = 1;
 	return (1);
 }
 
@@ -143,12 +143,12 @@ int client_routine( int argc, char *argv[], char *env[])
 	recenv.player = &player[0];
 	recenv.max_players = 2;
 	
-    //reciever
+	//reciever
 	pthread_t	tid;
 	if (pthread_create(&tid, NULL, &client_reciever, &recenv) < 0)
 		perror( "reciever launch failed" );
 
-    minigame(1, &player[0]);
+	minigame(1, &player[0]);
 
 	pthread_join(tid, NULL);
 	return (0);
