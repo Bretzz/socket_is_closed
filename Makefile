@@ -29,7 +29,7 @@ LIBFT			= $(LIBFT_DIR)/libft.a
 LINKS 	 	   = -L/usr/lib -L$(MLX_DIR) -lXext -lX11 -lm -lz -lpthread
 
 #Includes
-INKS			= -I$(LIBFT_DIR) -I$(MLX_DIR) -O3
+INKS			= -I$(CURDIR) -I$(LIBFT_DIR) -I$(MLX_DIR) -O3
 
 #source files (expected in the root folder)
 SRCS_DIR		=
@@ -42,6 +42,8 @@ SRCS			= $(addprefix $(SRCS_DIR), $(SRC_FILES))
 OBJS_DIR		= obj/
 OBJ_FILES		= $(SRCS:.c=.o)
 OBJS			= $(addprefix $(OBJS_DIR), $(OBJ_FILES))
+
+VPATH 			= src
 
 ifeq ($(UNAME),Darwin)
 	MLX_DIR		= minilibx_opengl
@@ -79,7 +81,7 @@ $(MLX_DIR):
 
 $(MLX): $(MLX_DIR)
 	@rm -f $(MLX_DIR)/libmlx.a
-	@$(MAKE) -C $(MLX_DIR)
+	@$(MAKE) -C $(MLX_DIR) --quiet
 
 $(LIBFT):
 	@echo "${BOLD}creating libft...${RESET}"
@@ -117,8 +119,10 @@ server: $(MLX) $(LIBFT) $(OBJS) $(SERVER)
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 clean:
-	@rm -f client server
+	@rm -f client server $(OBJS_DIR)* game minigame
 fclean: clean
 	@rm -rf $(MLX) $(LIBFT) $(OBJS_DIR)
+
+lre: clean all
 
 re: fclean all

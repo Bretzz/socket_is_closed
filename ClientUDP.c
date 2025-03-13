@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   ClientUDP.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 12:26:20 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:22:32 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket_is_closed.h"
 
+//updating player[0]'s data
 static int	update_player(const char *ip, const char *coords, t_player *player)
 {
 	char	**split;
 
-	printf("updating player %s\n", ip);
+	ft_printf("updating player %s\n", ip);
 	if (ip == NULL)
 	{
 		perror( "bad ip" );
@@ -47,8 +48,8 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 		return (0);
 	if (!update_player(split[0], split[1], &recenv->player[0]))
 		return (0);
-	printf("%-15s at %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
-	printf("%-15s at %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
+	ft_printf("%-15s at %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
+	ft_printf("%-15s at %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
 	ft_freentf("2", split);
 	return (1);
 }
@@ -68,7 +69,7 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 			perror( "recv failed" );
 			break;
 		}
-		printf( "%d bytes: '%s' from Server\n", length, buffer);
+		ft_printf( "%d bytes: '%s' from Server\n", length, buffer);
 		handle_players(buffer, recenv);
 	}
 	close(recenv->player[0].socket);
@@ -87,7 +88,7 @@ static int client_player_init(t_player *player, char **env)
 	
 	struct sockaddr_in serveraddr;
 
-	memset(&serveraddr, 0, sizeof(struct sockaddr_in));
+	ft_memset(&serveraddr, 0, sizeof(struct sockaddr_in));
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_port = htons ( MYPORT );
 	serveraddr.sin_addr.s_addr = inet_addr(get_serv_ip(env)); //192.168.1.5 //INADDR_ANY
@@ -97,17 +98,11 @@ static int client_player_init(t_player *player, char **env)
 		perror("connectin failed");
 		return (0);
 	}
-	printf("connection accepted!!!\n");
+	ft_printf("connection accepted!!!\n");
 
+	//send test
 	if (send(servfd, get_locl_ip(env), 15, 0) < 0)
 		perror("send failure");
-
-	int len;
-	char buffer[MAXLINE] = { 0 };
-	if ((len = recv(servfd, buffer, MAXLINE - 1, 0)) < 0)
-		perror("recv failure");
-	else
-		printf("%d bytes: '%s' from Server\n", len, buffer);
 
 	//player init
 	memmove(&player[1].ip, get_locl_ip(env), 15);
@@ -129,17 +124,17 @@ int client_routine( int argc, char *argv[], char *env[])
 
 	//player[0] = server, player[1] = client
 	t_player player[2];
-	memset(&player, 0, 2 * sizeof(t_player));
+	ft_memset(&player, 0, 2 * sizeof(t_player));
 
 	//initialize the data to connect to the server
 	if (!client_player_init(&player[0], env))
 		return (0);
 
-	printf("===  HOST  ===\n");
+	ft_printf("===  HOST  ===\n");
 	player_specs(player[0]);
-	printf("=== PLAYER ===\n");
+	ft_printf("=== PLAYER ===\n");
 	player_specs(player[1]);
-	printf("= == == == = =\n");
+	ft_printf("= == == == = =\n");
 
 	t_recenv	recenv;
 	

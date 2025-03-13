@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minigame.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 12:27:35 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 18:29:12 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 void	player_specs(t_player player)
 {
-	printf("player ip    : %s\n", player.ip);
-	printf("player name  : %s\n", player.name);
-	printf("player socket: %d\n", player.socket);
-	printf("player num   : %d\n", player.num);
-	printf("player pos   : %d-%d-%d\n", (int)player.pos.x, (int)player.pos.y, (int)player.pos.z);
-	printf("player target: %d-%d-%d\n", (int)player.target.x, (int)player.target.y, (int)player.target.z);
+	ft_printf("player ip    : %s\n", player.ip);
+	ft_printf("player name  : %s\n", player.name);
+	ft_printf("player socket: %d\n", player.socket);
+	ft_printf("player num   : %d\n", player.num);
+	ft_printf("player pos   : %d-%d-%d\n", (int)player.pos.x, (int)player.pos.y, (int)player.pos.z);
+	ft_printf("player target: %d-%d-%d\n", (int)player.target.x, (int)player.target.y, (int)player.target.z);
 
 }
 
@@ -67,7 +67,7 @@ static void	my_pixel_put(void *my_struct, int x, int y, float z, unsigned int co
 	if (!my_struct)
 		return ;
 	mlx = (t_mlx *)my_struct;
-	//printf("putting (%i, %i, %f), with color %x\n", x, y, z, color);
+	//ft_printf("putting (%i, %i, %f), with color %x\n", x, y, z, color);
 	// If the point is off-screen, do not draw it
 	if (x < 0 || y < 0 || /* z > 0 || */ x >= mlx->win_x || y >= mlx->win_y)
 		return ;
@@ -103,13 +103,13 @@ static int	handle_player(t_player *player, t_mlx *mlx)
 		{
 			if (lineframes[player->num] == 10)
 			{
-				memset(&player->target, 0, sizeof(t_point));
+				ft_memset(&player->target, 0, sizeof(t_point));
 				lineframes[player->num] = 0;
 				return (1);
 			}
 			put_line(mlx, player->pos, player->target, 0xFFFFFF);
 			lineframes[player->num]++;
-			//memset(&player->target, 0, sizeof(t_point));
+			//ft_memset(&player->target, 0, sizeof(t_point));
 			//player_specs(*player);
 		}
 		return (1);
@@ -134,7 +134,7 @@ static int	put_board(t_mlx *mlx)
 	mlx_put_image_to_window(mlx->mlx, mlx->win, mlx->img.img, 0, 0);
 	//ft_printf("ccc\n");
 	mlx_destroy_image(mlx->mlx, mlx->img.img);
-	//printf("the board is put\n");
+	//ft_printf("the board is put\n");
 	return (1);
 }
 
@@ -148,7 +148,7 @@ static int	send_pos(t_point my_pos, const char *my_ip, t_player player)
 	coords[0] = ft_itoa((int)my_pos.x);
 	coords[1] = ft_itoa((int)my_pos.y);
 	coords[2] = ft_itoa((int)my_pos.z);
-	memset(pos, 0, 30);
+	ft_memset(pos, 0, 30);
 	ft_strlcpy(pos, my_ip, 16);
 	ft_strlcat(pos, ":", strlen(pos) + 2);
 	ft_strlcat(pos, coords[0], strlen(pos) + strlen(coords[0]) + 1);
@@ -168,10 +168,34 @@ static int	handle_mouse(int keysym, int x, int y, t_mlx *mlx)
 	{
 		mlx->player[mlx->index].target.x = x;
 		mlx->player[mlx->index].target.y = y;
-		printf("RIGHT CLICK!!!\n");
+		ft_printf("RIGHT CLICK!!!\n");
 	}
 	else
-		printf("Mouse thing N. %d\n", keysym);
+		ft_printf("Mouse thing N. %d\n", keysym);
+	return (0);
+}
+
+static int	handle_UpDw_press(int keysym, void *arg)
+{
+	t_mlx	*mlx;
+
+	mlx = (t_mlx *)arg;
+	if (keysym == XK_Down || keysym == XK_s || keysym == 125 || keysym == 1)
+		mlx->player[mlx->index].pos.y += 10;
+	else if (keysym == XK_Up || keysym == XK_w || keysym == 126 || keysym == 13)
+		mlx->player[mlx->index].pos.y -= 10;
+	return (0);
+}
+
+static int	handle_LxRx_press(int keysym, void *arg)
+{
+	t_mlx	*mlx;
+
+	mlx = (t_mlx *)arg;
+	if (keysym == XK_Left || keysym == XK_a || keysym == 123 || keysym == 0)
+		mlx->player[mlx->index].pos.x -= 10;
+	else if (keysym == XK_Right || keysym == XK_d || keysym == 124 || keysym == 2)
+		mlx->player[mlx->index].pos.x += 10;
 	return (0);
 }
 
@@ -183,17 +207,16 @@ static int	handle_heypress(int keysym, void *arg)
 	mlx = (t_mlx *)arg;
 	if (keysym == XK_Escape || keysym == 53)
 		clean_exit(mlx);
-	else if (keysym == XK_Down || keysym == XK_s || keysym == 125)
+	else if (keysym == XK_Down || keysym == XK_s || keysym == 125 || keysym == 1)
 		mlx->player[mlx->index].pos.y += 10;
-	else if (keysym == XK_Up || keysym == XK_w || keysym == 126)
+	else if (keysym == XK_Up || keysym == XK_w || keysym == 126 || keysym == 13)
 		mlx->player[mlx->index].pos.y -= 10;
-	else if (keysym == XK_Left || keysym == XK_a || keysym == 123)
+	else if (keysym == XK_Left || keysym == XK_a || keysym == 123 || keysym == 0)
 		mlx->player[mlx->index].pos.x -= 10;
-	else if (keysym == XK_Right || keysym == XK_d || keysym == 124)
+	else if (keysym == XK_Right || keysym == XK_d || keysym == 124 || keysym == 2)
 		mlx->player[mlx->index].pos.x += 10;
 	else
 		printf("Key Pressed: %i\n", keysym);
-	put_board(mlx);
 	//player_specs(mlx->player[0]); player_specs(mlx->player[1]);
 	i = 0;
 	while (i < 2)
@@ -217,11 +240,25 @@ static int	update_frame(t_mlx *mlx)
 	return (0);
 }
 
+static int	handle_movement(t_mlx *mlx)
+{
+	//pthread_t tid[2];
+	
+	(void)handle_heypress; (void)handle_UpDw_press; (void)handle_LxRx_press;
+	//mlx_do_key_autorepeatoff(mlx->mlx);
+	//pthread_create()
+	//mlx_key_hook(mlx->win, &handle_UpDw_press, mlx);
+	//mlx_key_hook(mlx->win, &handle_LxRx_press, mlx);
+	mlx_hook(mlx->win, KeyPress, KeyPressMask, &handle_heypress, mlx);
+	//mlx_hook(mlx.win, KeyPress, KeyPressMask, &handle_UpDw_press, &mlx); 
+	return (0);
+}
+
 int	minigame(int my_pos, t_player *player)
 {
 	t_mlx	mlx;
 
-	memset(&mlx, 0, sizeof(t_mlx));
+	ft_memset(&mlx, 0, sizeof(t_mlx));
 	mlx.player = player;
 	mlx.index = my_pos;
 	if (juice_the_pc(&mlx))
@@ -229,9 +266,11 @@ int	minigame(int my_pos, t_player *player)
 
 	put_board(&mlx);
 	
-	mlx_hook(mlx.win, KeyPress, KeyPressMask, &handle_heypress, &mlx);
-	mlx_hook(mlx.win, DestroyNotify, StructureNotifyMask, &clean_exit, &mlx);
+	handle_movement(&mlx);
 	mlx_mouse_hook(mlx.win, &handle_mouse, &mlx);
+	/* mlx_hook(mlx.win, KeyPress, KeyPressMask, &handle_heypress, &mlx);
+	mlx_hook(mlx.win, KeyPress, KeyPressMask, &handle_UpDw_press, &mlx); */
+	mlx_hook(mlx.win, DestroyNotify, StructureNotifyMask, &clean_exit, &mlx);
 	mlx_loop_hook(mlx.mlx, &update_frame, &mlx);
 	mlx_loop(mlx.mlx);
 	return (0);
@@ -241,7 +280,7 @@ int	minigame(int my_pos, t_player *player)
 {
 	t_player player;
 
-	memset(&player, 0, sizeof(t_player));
+	ft_memset(&player, 0, sizeof(t_player));
 	if (!minigame(&player))
 		return (0);
 	return (1);

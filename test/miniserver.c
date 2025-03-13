@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 01:03:17 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/13 01:39:38 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/13 17:15:03 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,14 @@ int main(void)
 	memset(&clientaddr, 0, sizeof(struct sockaddr_in));
 	if ((connfd = accept(recvfd, (struct sockaddr *)&clientaddr, &addrlen)) < 0)
 		perror("accept failed");
-	printf("connection accepted!\n");
+	ft_printf("connection accepted!\n");
 	
 	int	len;
 	char buffer[1024] = { 0 };
 	if ((len = recv(connfd, buffer, 1023, 0)) < 0)
 		perror("recv failure");
 	else
-		printf("%d bytes: %s\n", len, buffer);
+		ft_printf("%d bytes: %s\n", len, buffer);
 	//write(connfd, "HTTP/1.0 200 OK\r\n\r\nHello sweety", 35);
 	if ((len = send(connfd, "HTTP/1.0 200 OK\r\n\r\nHello sweety", 35, 0)) < 0)
 		perror("send failure");

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerUDP.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 12:20:07 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:19:04 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static int	update_player(const char *ip, const char *coords, t_player *player)
 {
 	char	**split;
 
-	printf("updating player %s\n", ip);
+	ft_printf("updating player %s\n", ip);
 	if (ip == NULL)
 	{
 		perror( "bad ip" );
@@ -40,7 +40,7 @@ static int	register_player(const char *ip, int playersocket, const char *coords,
 {
 	char	**split;
 
-	printf("registering new player...\n");
+	ft_printf("registering new player...\n");
 	//usleep(1000000);
 	if (ip == NULL)
 	{
@@ -49,7 +49,7 @@ static int	register_player(const char *ip, int playersocket, const char *coords,
 	}
 	memmove(player->ip, ip, 15);
 	player->socket = playersocket;
-	printf("sendfd=%i\n", player->socket);
+	ft_printf("sendfd=%i\n", player->socket);
 	
 	split = ft_split(coords, '-');
 	if (split == NULL)
@@ -62,7 +62,7 @@ static int	register_player(const char *ip, int playersocket, const char *coords,
 	player->pos.y = ft_atoi(split[1]);
 	player->pos.z = ft_atoi(split[2]);
 	ft_freentf("2", split);
-	printf("new player registered:\n");
+	ft_printf("new player registered:\n");
 	player_specs(*player);
 	return (1);
 }
@@ -86,8 +86,8 @@ NOTE: player[0] is updated by minigame*/
 		if (!update_player(split[0], split[1], &recenv->player[1]))
 			return (0);
 	}
-	printf("%-15s : %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
-	printf("%-15s : %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
+	ft_printf("%-15s : %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
+	ft_printf("%-15s : %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
 	ft_freentf("2", split);
 	return (1);
 } */
@@ -106,8 +106,8 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 		if (!update_player(split[0], split[1], &recenv->player[1]))
 			return (0);
 	}
-	printf("%-15s : %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
-	printf("%-15s : %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
+	ft_printf("%-15s : %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
+	ft_printf("%-15s : %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
 	ft_freentf("2", split);
 	return (1);
 }
@@ -124,7 +124,7 @@ void	*server_reciever(void *arg)
 
 	struct sockaddr_in serveraddr;
 
-	memset(&serveraddr, 0, sizeof(struct sockaddr_in));
+	ft_memset(&serveraddr, 0, sizeof(struct sockaddr_in));
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_port = htons ( MYPORT );
 	serveraddr.sin_addr.s_addr = htonl( INADDR_ANY );
@@ -138,17 +138,17 @@ void	*server_reciever(void *arg)
 	struct sockaddr_in clientaddr;
 	socklen_t addrlen;
 
-	memset(&clientaddr, 0, sizeof(struct sockaddr_in));
+	ft_memset(&clientaddr, 0, sizeof(struct sockaddr_in));
 	if ((connfd = accept(recvfd, (struct sockaddr *)&clientaddr, &addrlen)) < 0)
 		perror("accept failed");
-	printf("connection accepted!\n");
+	ft_printf("connection accepted!\n");
 
 	int	len;
 	char buffer[MAXLINE] = { 0 };
 	if ((len = recv(connfd, buffer, MAXLINE - 1, 0)) < 0)
 		perror("recv failure");
 	else
-		printf("%d bytes: %s\n", len, buffer);
+		ft_printf("%d bytes: %s\n", len, buffer);
 
 	register_player(buffer, connfd, "0-0-0", &recenv->player[1]);
 	
@@ -160,14 +160,14 @@ void	*server_reciever(void *arg)
 	
 	while ( 1 )
 	{
-		memset(buffer, 0, MAXLINE);
+		ft_memset(buffer, 0, MAXLINE);
 		ft_printf("talk to me baby...\n");
 		int length = recvfrom( connfd, buffer, MAXLINE - 1, 0, (struct sockaddr *)&addrin, &addrlen );
 		if ( length < 0 ) {
 			perror( "recvfrom failed" );
 			break;
 		}
-		printf( "%d bytes: '%s' from %s\n", length, buffer, inet_ntoa(addrin.sin_addr));
+		ft_printf( "%d bytes: '%s' from %s\n", length, buffer, inet_ntoa(addrin.sin_addr));
 		handle_players(buffer, recenv);
 	}
 	return (NULL);
@@ -187,7 +187,7 @@ int server_routine( int argc, char *argv[], char *env[])
 	ft_printf("LOCAL_IP=%s, SERVER_IP=%s\n", get_locl_ip(env), get_serv_ip(env));
 
 	t_player player[2];
-	memset(&player, 0, 2 * sizeof(t_player));
+	ft_memset(&player, 0, 2 * sizeof(t_player));
 	
 	//player init
 	host_player_init(&player[0], env);

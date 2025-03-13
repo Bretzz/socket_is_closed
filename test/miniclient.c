@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 01:20:06 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/13 01:40:42 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/13 17:14:35 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int main(void)
 
     if (connect(servfd, (struct sockaddr *)&serveraddr, sizeof(struct sockaddr)))
         perror("connection failed");
-    printf("connection accepted!!!\n");
+    ft_printf("connection accepted!!!\n");
 
     if (send(servfd, "Hi there, my name is pippo", 26, 0))
         perror("send failure");
@@ -38,7 +38,7 @@ int main(void)
     if ((len = recv(servfd, buffer, 1023, 0)) < 0)
         perror("recv failure");
     else
-        printf("%d bytes: '%s' from Server\n", len, buffer);
+        ft_printf("%d bytes: '%s' from Server\n", len, buffer);
 
     close(servfd);
     return (0);    

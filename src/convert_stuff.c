@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   convert_stuff.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:30:56 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 14:41:22 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:18:33 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ unsigned int	ip_to_uns(const char *ip)
 		return (0);
 	uns = 0;
 	i = 0;
-	memset(hex, 0, 10);
+	ft_memset(hex, 0, 10);
 	ft_strlcat(hex, "0x", 3);
 	while (i < 4)
 	{
