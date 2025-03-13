@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 12:15:24 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 12:27:35 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static void	my_pixel_put(void *my_struct, int x, int y, float z, unsigned int co
 }
 
 
-static int	put_line(t_mlx *mlx, t_point p, t_point t, unsigned int color)
+/* static  */int	put_line(t_mlx *mlx, t_point p, t_point t, unsigned int color)
 {
 	int dx =  fabsf (t.x - p.x), sx = p.x < t.x ? 1 : -1;
 	int dy = -fabsf (t.y - p.y), sy = p.y < t.y ? 1 : -1; 
@@ -101,7 +101,6 @@ static int	handle_player(t_player *player, t_mlx *mlx)
 		my_pixel_put(mlx, player->pos.x, player->pos.y, player->pos.z, 0xFFFFFF);
 		if (player->target.x || player->target.y)
 		{
-			//player_specs(*player);
 			if (lineframes[player->num] == 10)
 			{
 				memset(&player->target, 0, sizeof(t_point));
@@ -110,8 +109,6 @@ static int	handle_player(t_player *player, t_mlx *mlx)
 			}
 			put_line(mlx, player->pos, player->target, 0xFFFFFF);
 			lineframes[player->num]++;
-			/* player->target.x = 0;
-			player->target.y = 0; */
 			//memset(&player->target, 0, sizeof(t_point));
 			//player_specs(*player);
 		}

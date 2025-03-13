@@ -6,7 +6,7 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 11:04:48 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/13 12:26:20 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,11 @@ int client_routine( int argc, char *argv[], char *env[])
 	if (!client_player_init(&player[0], env))
 		return (0);
 
+	printf("===  HOST  ===\n");
 	player_specs(player[0]);
+	printf("=== PLAYER ===\n");
+	player_specs(player[1]);
+	printf("= == == == = =\n");
 
 	t_recenv	recenv;
 	
