@@ -5,6 +5,8 @@ public IP:
     curl ifconfig.me
 
 bug when hosting and connecting locally,
-from 127.0.0.1 and from local IP in the same session.
+from 127.0.0.1 and from local IP in the same session. (SOLVED with connect(3))
 
 NICE GUIDE: https://beej.us/guide/bgnet/html/split/
+
+next to_do: valgrind, hellgrind, general cleanup (remember backups on the way)
