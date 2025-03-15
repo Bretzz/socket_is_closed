@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:35:22 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/14 15:12:37 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/15 17:47:09 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,20 @@ char	*get_serv_ip(char **env)
 		i++;
 	}
 	return ("ip not found");
+}
+
+char	*get_my_name(char **env)
+{
+	int	i;
+
+	if (env == NULL)
+		return (NULL);
+	i = 0;
+	while (env[i] != NULL)
+	{
+		if (!ft_strncmp("NAME=", env[i], 5))
+			return (env[i] + 5);
+		i++;
+	}
+	return ("senzanome");
 }

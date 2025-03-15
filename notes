@@ -11,6 +11,12 @@ NICE GUIDE: https://beej.us/guide/bgnet/html/split/
 
 next to_do: valgrind, hellgrind, general cleanup (remember backups on the way)
 
-HOLE PUNCHING for host succesion
+lore:
+    1. HOLE PUNCHING for host succesion
+    2. optimize server resend of info (just updated info)
 
-optimize server resend of info (just updated info)
+cleanup my mess :D [! ! !remember BACKUPS on the way! ! !]
+    1. free allocs
+    2. close sockets
+    3. destroy mutex
+    4. check data races

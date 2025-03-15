@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/15 00:59:21 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/15 17:34:55 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,7 @@ int 			server_duty(void);
 
 char	*get_locl_ip(char **env);
 char	*get_serv_ip(char **env);
+char	*get_my_name(char **env);
 
 int		is_ip(const char *s);
 

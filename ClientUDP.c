@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/15 01:00:47 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/15 17:39:37 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 	char	**split;
 	int		i;
 
-	split = ft_split(buffer, '\n');
+	split = ft_split(buffer, '\n'); //not used, but eventually can hanndle more than one player data
 	if (split == NULL || recenv == NULL)
 		return (0);
 	i = 0;
@@ -120,7 +120,6 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 	{
 		if (one_player_data(split[i++], recenv) < 0)
 			return (ft_freentf("2", split), -1);
-
 	}
 	ft_printf(STATS);
 	printf("%-15s at %d_%d_%d\n", recenv->player[0].ip, (int)recenv->player[0].pos.x, (int)recenv->player[0].pos.y, (int)recenv->player[0].pos.z);
@@ -130,9 +129,10 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 	return (1);
 }
 
-/* static  */void	*client_reciever(void *arg)
+static void	*client_reciever(void *arg)
 {
 	t_recenv	*recenv;
+	int			len;
 
 	recenv = (t_recenv *)arg;
 	
@@ -140,12 +140,12 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 	while ( 1 )
 	{
 		ft_printf("talk to me...\n");
-		int length = recv( recenv->player[0].socket, buffer, MAXLINE - 1, 0 );
-		if ( length < 0 ) {
+		len = recv( recenv->player[0].socket, buffer, MAXLINE - 1, 0 );
+		if ( len < 0 ) {
 			perror(ERROR"recv failed"RESET);
 			break;
 		}
-		ft_printf(YELLOW"%d bytes: '%s' from Server\n"RESET, length, buffer);
+		ft_printf(YELLOW"%d bytes: '%s' from Server\n"RESET, len, buffer);
 		if (handle_players(buffer, recenv) < 0)
 		{
 			ft_printf(HOST"A NEW HOST WILL RISE%s\n", RESET);
@@ -158,7 +158,8 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 
 static int client_player_init(t_player *player, char **env)
 {
-	int servfd;
+	int		servfd;
+	char	buffer[30];
 	
 	if ((servfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
@@ -180,8 +181,13 @@ static int client_player_init(t_player *player, char **env)
 	}
 	ft_printf(GREEN"connection accepted!!!\n"RESET);
 
+	ft_memset(buffer, 0, 30);
+	ft_strlcpy(buffer, get_locl_ip(env), 16);
+	ft_strlcat(buffer, ":", ft_strlen(buffer) + 2);
+	ft_strlcat(buffer, get_my_name(env), ft_strlen(buffer) + 11);
+	
 	//send test
-	if (send(servfd, get_locl_ip(env), 15, 0) < 0)
+	if (send(servfd, buffer, 30, 0) < 0)
 		perror(ERROR"send failure"RESET);
 
 	//host init
@@ -191,7 +197,7 @@ static int client_player_init(t_player *player, char **env)
 	player[0].socket = servfd;
 	//player init
 	ft_memmove(&player[1].ip, get_locl_ip(env), 15);
-	ft_memmove(&player[1].name, "pippo", 5);
+	ft_memmove(&player[1].name, get_my_name(env), 10);
 	player[1].num = 1;
 	return (1);
 }

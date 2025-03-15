@@ -6,14 +6,14 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/15 01:26:55 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/15 17:51:45 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket_is_closed.h"
 
 //just looking, no mutex
-static char	*get_lobby_stats(char *buffer, t_player *player)
+/* static  */char	*get_lobby_stats(char *buffer, t_player *player)
 {
 	int	i;
 	char	minibuffer[45];
@@ -56,11 +56,11 @@ static int	update_player(const char *ip, const char *coords, const char *target,
 		ft_freentf("2", split);
 		return (0);
 	}
-	pthread_mutex_lock(player->mutex);
+	//pthread_mutex_lock(player->mutex);
 	player->pos.x = ft_atoi(split[0]);
 	player->pos.y = ft_atoi(split[1]);
 	player->pos.z = ft_atoi(split[2]);
-	pthread_mutex_unlock(player->mutex);
+	//pthread_mutex_unlock(player->mutex);
 	ft_freentf("2", split);
 	split = ft_split(target, '_');
 	if (split == NULL)
@@ -69,29 +69,36 @@ static int	update_player(const char *ip, const char *coords, const char *target,
 		ft_freentf("2", split);
 		return (1);
 	}
-	pthread_mutex_lock(player->mutex);
+	//pthread_mutex_lock(player->mutex);
 	player->target.x = ft_atoi(split[0]);
 	player->target.y = ft_atoi(split[1]);
 	player->target.z = ft_atoi(split[2]);
-	pthread_mutex_unlock(player->mutex);
+	//pthread_mutex_unlock(player->mutex);
 	ft_freentf("2", split);
 	return (1);
 }
 
 //mutex needed (already locked)
-static int	register_player(int index, const char *ip, int playersocket, const char *coords, t_player *player)
+static int	register_player(int index, const char *player_data, int playersocket, const char *coords, t_player *player)
 {
 	char	**split;
 
 	ft_printf(PURPLE"registering new player...\n"RESET);
-	if (ip == NULL)
+	split = ft_split(player_data, ':');
+	if (split == NULL)
 	{
 		ft_printf(RED"bad ip: null string\n"RESET);
 		return(0);
 	}
-	ft_memmove(player[index].ip, ip, 15);
+	
+	ft_memmove(player[index].ip, split[0], 15);
+	if (split[1] == NULL)
+		ft_memmove(player[index].name, "senzanome", 10);
+	else
+		ft_memmove(player[index].name, split[1], 10);
 	player[index].socket = playersocket;
-	player[index].num = index;	
+	player[index].num = index;
+	ft_freentf("2", split);
 	split = ft_split(coords, '_');
 	if (split == NULL)
 	{
@@ -111,23 +118,23 @@ static int	register_player(int index, const char *ip, int playersocket, const ch
 //mutex needed
 static int	kill_player(t_player *player, char *dead)
 {
-	pthread_mutex_t	*mutex;
+	//pthread_mutex_t	*mutex;
 
-	mutex = player->mutex;
-	pthread_mutex_lock(mutex);
+	//mutex = player->mutex;
+	//pthread_mutex_lock(mutex);
 	close(player->socket);
 	ft_memset(player, 0, sizeof(t_player));
 	*dead = 1;
-	pthread_mutex_unlock(mutex);
+	//pthread_mutex_unlock(mutex);
 	return (1);
 }
 
 /* single second player handling. 
 NOTE: player[0] is updated by minigame*/
-static int	handle_players(char *dead, const char *buffer, t_recenv *recenv)
+static int	handle_players(char *dead, int length, const char *buffer, t_recenv *recenv)
 {
 	char			**split;
-	char			lobby[45 * (MAXPLAYERS + 1)];
+	//char			lobby[45 * (MAXPLAYERS + 1)];
 	int				i[2];
 	
 	split = ft_split(buffer, ':');
@@ -146,12 +153,12 @@ static int	handle_players(char *dead, const char *buffer, t_recenv *recenv)
 		}
 		i[0]++;
 	}
-	get_lobby_stats(lobby, recenv->player);
+	//get_lobby_stats(lobby, recenv->player);
 	i[1] = 1;
 	while (i[1] < MAXPLAYERS)
 	{
-		if (recenv->player[i[1]].ip[0] != '\0' && i[1] != i[0]
-			&& (send(recenv->player[i[1]].socket, lobby, sizeof(lobby), 0) < 0))
+		if (recenv->player[i[1]].ip[0] != '\0'/*  && i[1] != i[0] */
+			&& (send(recenv->player[i[1]].socket, buffer, length, 0) < 0))
 			perror(ERROR"send failure"RESET);
 		i[1]++;
 	}
@@ -164,8 +171,9 @@ static int	handle_players(char *dead, const char *buffer, t_recenv *recenv)
 
 /* accept one connnection and starts to listen to it.
 updates recenv->index so that the next thread can go onto
-the next slot. */
-void	*server_reciever(void *arg)
+the next slot.
+TEORICALLY just updates the data of the player selected, so no mutex is needed. */
+static void	*server_reciever(void *arg)
 {
 	t_recenv	*recenv;
 	int			connfd;
@@ -182,7 +190,7 @@ void	*server_reciever(void *arg)
 	if ((connfd = accept(recenv->socket, (struct sockaddr *)&clientaddr, &addrlen)) < 0)
 		perror(ERROR"accept failed"RESET);
 	
-	pthread_mutex_lock(&recenv->player_mutex);
+	//pthread_mutex_lock(&recenv->player_mutex); //no other thread will accept another connection since it isn't spawned yet
 	ft_printf(GREEN"connection accepted!\n"RESET);
 
 	int	len;
@@ -200,7 +208,7 @@ void	*server_reciever(void *arg)
 		perror(ERROR"send failure"RESET);
 	
 	recenv->index++;
-	pthread_mutex_unlock(&recenv->player_mutex);
+	//pthread_mutex_unlock(&recenv->player_mutex);
 	
 	//how do I listen to multiple players?
 	//WAIT
@@ -212,20 +220,19 @@ void	*server_reciever(void *arg)
 	pthread_detach(tid);
 	
 	struct sockaddr_in addrin;
-	int		length;
 
 	dead = 0;
 	while (!dead)
 	{
 		ft_memset(buffer, 0, MAXLINE);
 		ft_printf("talk to me baby...\n");
-		length = recvfrom( recenv->player[my_index].socket, buffer, MAXLINE - 1, 0, (struct sockaddr *)&addrin, &addrlen );
-		if ( length < 0 ) {
+		len = recvfrom( recenv->player[my_index].socket, buffer, MAXLINE - 1, 0, (struct sockaddr *)&addrin, &addrlen );
+		if ( len < 0 ) {
 			perror(ERROR"recvfrom failed"RESET);
 			break;
 		}
-		ft_printf(YELLOW"%d bytes: '%s' from %s\n"RESET, length, buffer, inet_ntoa(addrin.sin_addr));
-		handle_players(&dead, buffer, recenv);
+		ft_printf(YELLOW"%d bytes: '%s' from %s\n"RESET, len, buffer, inet_ntoa(addrin.sin_addr));
+		handle_players(&dead, len, buffer, recenv);
 	}
 	ft_printf(KILL"player %i is dead %s\n", my_index, RESET); //because we are zeroing it...
 	return (NULL);
@@ -256,7 +263,8 @@ static int	host_player_init(t_player *player, char **env)
 
 	//player[0] 'host' data init
 	ft_memmove(&player[0].ip, get_serv_ip(env), 15);
-	ft_memmove(&player[0].name, "pippo host", 10);
+	ft_memmove(&player[0].name, get_my_name(env), 10);
+	ft_strlcat(player[0].name, " host", ft_strlen(player[0].name) + 6);
 	player[0].num = 0;
 	return(listfd);
 }

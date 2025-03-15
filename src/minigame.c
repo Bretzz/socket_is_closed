@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/15 00:57:50 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/15 17:39:58 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static int	juice_the_pc(t_mlx *mlx)
 		return (1);
 	mlx->win_x = MLX_WIN_X;
 	mlx->win_y = MLX_WIN_Y;
-	mlx->win = mlx_new_window(mlx->mlx, MLX_WIN_X, MLX_WIN_Y, mlx->player[mlx->index].ip);
+	mlx->win = mlx_new_window(mlx->mlx, MLX_WIN_X, MLX_WIN_Y, mlx->player[mlx->index].name);
 	if (!mlx->win)
 	{
 		free(mlx->mlx);
@@ -343,11 +343,10 @@ int	minigame(int index, t_player *player)
 	mlx.index = index;
 	if (juice_the_pc(&mlx))
 		return (1);
-	ft_printf("pc juiced\n");
-
-	put_board(&mlx);
 	
-	ft_printf("board put\n");
+	//ft_printf("pc juiced\n");
+	put_board(&mlx);
+	//ft_printf("board put\n");
 
 	//game mechanics
 	mlx_mouse_hook(mlx.win, &handle_mouse, &mlx);

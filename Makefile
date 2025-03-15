@@ -13,6 +13,7 @@ LIGHT_GREEN		= \033[92m
 LIGHT_CYAN		= \033[96m
 RESET			= \033[0m
 
+NAME			:= game
 SERVER 			:= ServerUDP.c
 CLIENT 			:= ClientUDP.c
 UNAME			:= $(shell uname)
@@ -63,7 +64,7 @@ else
 	UNAME = Error
 endif
 
-all: game
+all: $(NAME)
 
 $(OBJS_DIR):
 	@mkdir -p $(OBJS_DIR)
@@ -92,9 +93,9 @@ minigame: minigame.c $(MLX) $(LIBFT)
 	@$(CC) $(CFLAGS) minigame.c $(MLX) $(LIBFT) $(LINKS) $(INKS) -o minigame \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
-game: $(MLX) $(LIBFT) $(OBJS)
-	@echo "${BOLD}compiling the game...${RESET}"
-	@$(CC) $(CFLAGS) $(OBJS_DIR)* $(MLX) $(LIBFT) $(LINKS) -o game \
+$(NAME): $(MLX) $(LIBFT) $(OBJS)
+	@echo "${BOLD}compiling the $(NAME)...${RESET}"
+	@$(CC) $(CFLAGS) $(OBJS_DIR)* $(MLX) $(LIBFT) $(LINKS) -o $(NAME) \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 miniserver: miniserver.c
@@ -106,6 +107,10 @@ miniclient: miniclient.c
 	@echo "${BOLD}compiling miniclient...${RESET}"
 	@$(CC) $(CFLAGS) miniclient.c $(LINKS) $(INKS) -o miniclient \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
+
+tar:
+	@ls | grep -q "$(NAME).tar" && rm -f $(NAME).tar || true
+	@tar -cf $(NAME).tar --exclude=".git" --exclude="$(NAME)" --exclude="$(OBJS_DIR)" --exclude="$(MLX_DIR)" ./*
 
 clean:
 	@rm -f client server $(OBJS_DIR)* game minigame
