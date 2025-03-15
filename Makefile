@@ -19,14 +19,14 @@ UNAME			:= $(shell uname)
 CC				:= cc
 CFLAGS			:= -Wall -Wextra -Werror
 
-SCRIPT = config.sh
+SCRIPT			= config.sh
 
 #Libs
 LIBFT_DIR		:= libft
 LIBFT			= $(LIBFT_DIR)/libft.a
 
 #Linkers
-LINKS 	 	   = -L/usr/lib -L$(MLX_DIR) -lXext -lX11 -lm -lz -lpthread
+LINKS			= -L/usr/lib -L$(MLX_DIR) -lXext -lX11 -lm -lz -lpthread
 
 #Includes
 INKS			= -I$(CURDIR) -I$(LIBFT_DIR) -I$(MLX_DIR) -O3
@@ -105,17 +105,6 @@ miniserver: miniserver.c
 miniclient: miniclient.c
 	@echo "${BOLD}compiling miniclient...${RESET}"
 	@$(CC) $(CFLAGS) miniclient.c $(LINKS) $(INKS) -o miniclient \
-	&& echo "${LIGHT_GREEN}DONE${RESET}"
-
-client: $(MLX) $(LIBFT) $(OBJS) $(CLIENT)
-#	@./$(SCRIPT)
-	@echo "${BOLD}compiling client...${RESET}"
-	@$(CC) $(CFLAGS) $(CLIENT) $(OBJS_DIR)* $(MLX) $(LIBFT) $(LINKS) $(INKS) -o client \
-	&& echo "${LIGHT_GREEN}DONE${RESET}"
-
-server: $(MLX) $(LIBFT) $(OBJS) $(SERVER)
-	@echo "${BOLD}compiling server...${RESET}"
-	@$(CC) $(CFLAGS) $(SERVER) inet_stuff.c convert_stuff.c ft_freentf.c $(MLX) $(LIBFT) $(LINKS) $(INKS) -o server \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 clean:
