@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   socket_is_closed.h                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 11:58:37 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/15 00:59:21 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,28 @@
 
 # define MYPORT 42042
 # define MAXLINE 1024 
+# define MAXPLAYERS 3
 
 # define MLX_WIN_X 500
 # define MLX_WIN_Y 500
+
+//colors
+# define BOLD "\033[1m"
+# define BLACK "\033[0;30m"
+# define RED "\033[0;31m"
+# define GREEN "\033[0;32m"
+# define YELLOW "\033[0;33m"
+# define BLUE "\033[0;34m"
+# define PURPLE "\033[0;35m"
+# define CYAN "\033[0;36m"
+# define WHITE "\033[0;37m"
+# define RESET "\033[0m"
+
+# define ERROR "\033[0;41m"
+# define STATS "\033[0;34m"
+# define KILL "\033[0;101m"
+# define LISTEN "\033[0;101m"
+# define HOST "\033[0;43m"
 
 typedef struct s_point
 {
@@ -60,6 +79,7 @@ typedef struct s_player
 	t_point				pos;
 	t_point				target;
 	int					num;
+	pthread_mutex_t		*mutex;
 }				t_player;
 
 //mlx img variables
@@ -86,10 +106,11 @@ typedef struct s_mlx
 
 typedef	struct s_recenv
 {
-	int				socket_out;
+	int				socket;
 	char			**env;
+	unsigned int	index;
 	t_player		*player;
-	unsigned int	max_players;
+	pthread_mutex_t	player_mutex;
 }				t_recenv;
 
 //client
@@ -106,6 +127,7 @@ int				minigame(int my_pos, t_player *player);
 
 int				player_alive(t_player player);
 void			player_specs(t_player player);
+char 			*get_pos(char *buffer, t_point my_pos, t_point my_target, const char *my_ip);
 
 int 			server_duty(void);
 

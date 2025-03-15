@@ -6,33 +6,101 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/13 17:22:32 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/15 01:00:47 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket_is_closed.h"
 
 //updating player[0]'s data
-static int	update_player(const char *ip, const char *coords, t_player *player)
+static int	update_player(const char *ip, const char *coords, const char *target, t_player *player)
 {
 	char	**split;
 
-	ft_printf("updating player %s\n", ip);
+	ft_printf(PURPLE"updating player %s...\n"RESET, ip);
 	if (ip == NULL)
 	{
-		perror( "bad ip" );
+		ft_printf(RED"bad ip: null string\n"RESET);
 		return (0);
 	}
-	split = ft_split(coords, '-');
+	split = ft_split(coords, '_');
 	if (split == NULL)
 	{
-		perror( "bad coords" );
+		ft_printf(RED"bad coords: null string\n"RESET);
 		ft_freentf("2", split);
 		return (0);
 	}
 	player->pos.x = ft_atoi(split[0]);
 	player->pos.y = ft_atoi(split[1]);
 	player->pos.z = ft_atoi(split[2]);
+	ft_freentf("2", split);
+	split = ft_split(target, '_');
+	if (split == NULL)
+	{
+		ft_printf(RED"bad target: null string\n"RESET);
+		ft_freentf("2", split);
+		return (1);
+	}
+	player->target.x = ft_atoi(split[0]);
+	player->target.y = ft_atoi(split[1]);
+	player->target.z = ft_atoi(split[2]);
+	ft_freentf("2", split);
+	return (1);
+}
+
+static int	kill_player(t_player *player)
+{
+	ft_printf(KILL"killed player %s%s\n", player->ip, RESET);
+	ft_memset(player, 0, sizeof(t_player));
+	return (1);
+}
+
+static int	one_player_data(const char *buffer, t_recenv *recenv)
+{
+	char	**split;
+	size_t	len;
+	int		i;
+	
+	split = ft_split(buffer, ':');
+	if (split == NULL || recenv == NULL)
+		return (0);
+	if (!ft_strncmp("host", split[0], 4)) //update host
+	{
+		if (!ft_strncmp("died", split[1], 4))  //kill host
+		{
+			kill_player(&recenv->player[0]);
+			return (ft_freentf("2", split), -1);
+			//host redirect procedure
+		}
+		else if (!update_player(split[0], split[1], split[2], &recenv->player[0]))
+			return (ft_freentf("2", split), 0);
+		return (1);
+	}
+	len = ft_strlen(split[0]);
+	if (!is_ip(split[0]) || !ft_strncmp(recenv->player[1].ip, split[0], len))
+		return (0);
+	i = 2; //0 = host, 1 = self, >1 = extra players
+	while (i < MAXPLAYERS)
+	{
+		if (!ft_strncmp(split[0], recenv->player[i].ip, len)) //update other players
+		{
+			if (!ft_strncmp("died", split[1], 4))  //kill player
+				kill_player(&recenv->player[i]);
+			else if (!update_player(split[0], split[1], split[2], &recenv->player[i]))
+				return (ft_freentf("2", split), 0);
+			return (ft_freentf("2", split), 1);
+		}
+		if (recenv->player[i].ip[0] == '\0')
+			break ;
+		i++;
+	}
+	//adding new player
+	ft_memmove(&recenv->player[i].ip, split[0], len);
+	ft_memmove(&recenv->player[i].name, "new_player", 10);
+	recenv->player[i].num = i;
+	ft_printf(GREEN"A new player appeared!\n"RESET);
+	if (!update_player(split[0], split[1], split[2], &recenv->player[i]))
+		return (ft_freentf("2", split), 0);
 	ft_freentf("2", split);
 	return (1);
 }
@@ -42,14 +110,22 @@ NOTE: the 'player[1]' is moved by the minigame. */
 static int	handle_players(const char *buffer, t_recenv *recenv)
 {
 	char	**split;
+	int		i;
 
-	split = ft_split(buffer, ':');
+	split = ft_split(buffer, '\n');
 	if (split == NULL || recenv == NULL)
 		return (0);
-	if (!update_player(split[0], split[1], &recenv->player[0]))
-		return (0);
-	ft_printf("%-15s at %f\n", recenv->player[0].ip, recenv->player[0].pos.x);
-	ft_printf("%-15s at %f\n", recenv->player[1].ip, recenv->player[1].pos.x);
+	i = 0;
+	while (split[i] != NULL)
+	{
+		if (one_player_data(split[i++], recenv) < 0)
+			return (ft_freentf("2", split), -1);
+
+	}
+	ft_printf(STATS);
+	printf("%-15s at %d_%d_%d\n", recenv->player[0].ip, (int)recenv->player[0].pos.x, (int)recenv->player[0].pos.y, (int)recenv->player[0].pos.z);
+	printf("%-15s at %d_%d_%d\n", recenv->player[1].ip, (int)recenv->player[1].pos.x, (int)recenv->player[1].pos.y, (int)recenv->player[1].pos.z);
+	ft_printf(RESET);
 	ft_freentf("2", split);
 	return (1);
 }
@@ -66,11 +142,15 @@ static int	handle_players(const char *buffer, t_recenv *recenv)
 		ft_printf("talk to me...\n");
 		int length = recv( recenv->player[0].socket, buffer, MAXLINE - 1, 0 );
 		if ( length < 0 ) {
-			perror( "recv failed" );
+			perror(ERROR"recv failed"RESET);
 			break;
 		}
-		ft_printf( "%d bytes: '%s' from Server\n", length, buffer);
-		handle_players(buffer, recenv);
+		ft_printf(YELLOW"%d bytes: '%s' from Server\n"RESET, length, buffer);
+		if (handle_players(buffer, recenv) < 0)
+		{
+			ft_printf(HOST"A NEW HOST WILL RISE%s\n", RESET);
+			return (close(recenv->player[0].socket), NULL);
+		}
 	}
 	close(recenv->player[0].socket);
 	return (NULL);
@@ -82,7 +162,7 @@ static int client_player_init(t_player *player, char **env)
 	
 	if ((servfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
-		perror("socket failure");
+		perror(ERROR"socket failure"RESET);
 		return (0);
 	}
 	
@@ -95,24 +175,24 @@ static int client_player_init(t_player *player, char **env)
 
 	if (connect(servfd, (struct sockaddr *)&serveraddr, sizeof(struct sockaddr)))
 	{
-		perror("connectin failed");
+		perror(ERROR"connectin failed"RESET);
 		return (0);
 	}
-	ft_printf("connection accepted!!!\n");
+	ft_printf(GREEN"connection accepted!!!\n"RESET);
 
 	//send test
 	if (send(servfd, get_locl_ip(env), 15, 0) < 0)
-		perror("send failure");
+		perror(ERROR"send failure"RESET);
 
-	//player init
-	memmove(&player[1].ip, get_locl_ip(env), 15);
-	memmove(&player[1].name, "pippo", 5);
 	//host init
-	memmove(&player->sockaddr, &serveraddr, sizeof(struct sockaddr_in));
-	memmove(&player[0].ip, "host", 4);
-	memmove(&player[0].name, "host", 4);
-	player->socket = servfd;
-	player->num = 1;
+	ft_memmove(&player[0].sockaddr, &serveraddr, sizeof(struct sockaddr_in));
+	ft_memmove(&player[0].ip, "host", 4);
+	ft_memmove(&player[0].name, "host", 4);
+	player[0].socket = servfd;
+	//player init
+	ft_memmove(&player[1].ip, get_locl_ip(env), 15);
+	ft_memmove(&player[1].name, "pippo", 5);
+	player[1].num = 1;
 	return (1);
 }
 
@@ -123,8 +203,8 @@ int client_routine( int argc, char *argv[], char *env[])
 	ft_printf("LOCAL_IP=%s, SERVER_IP=%s\n", get_locl_ip(env), get_serv_ip(env));
 
 	//player[0] = server, player[1] = client
-	t_player player[2];
-	ft_memset(&player, 0, 2 * sizeof(t_player));
+	t_player player[MAXPLAYERS];
+	ft_memset(&player, 0, MAXPLAYERS * sizeof(t_player));
 
 	//initialize the data to connect to the server
 	if (!client_player_init(&player[0], env))
@@ -140,12 +220,11 @@ int client_routine( int argc, char *argv[], char *env[])
 	
 	recenv.env = env;
 	recenv.player = &player[0];
-	recenv.max_players = 2;
 	
 	//reciever
 	pthread_t	tid;
 	if (pthread_create(&tid, NULL, &client_reciever, &recenv) < 0)
-		perror( "reciever launch failed" );
+		perror(ERROR"reciever launch failed"RESET);
 
 	minigame(1, &player[0]);
 
