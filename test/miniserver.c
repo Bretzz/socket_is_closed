@@ -6,11 +6,24 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 01:03:17 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/13 17:15:03 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/15 01:37:35 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "socket_is_closed.h"
+//std libraries
+# include <stdlib.h>
+# include <unistd.h>
+# include <stdio.h> 
+# include <string.h>
+
+//net libraries
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+//# include <sys/types.h>
+# include <netdb.h>
+
+# define MYPORT 8080
 
 int main(void)
 {
@@ -38,16 +51,16 @@ int main(void)
 	memset(&clientaddr, 0, sizeof(struct sockaddr_in));
 	if ((connfd = accept(recvfd, (struct sockaddr *)&clientaddr, &addrlen)) < 0)
 		perror("accept failed");
-	ft_printf("connection accepted!\n");
+	printf("connection accepted!\n");
 	
 	int	len;
 	char buffer[1024] = { 0 };
 	if ((len = recv(connfd, buffer, 1023, 0)) < 0)
 		perror("recv failure");
 	else
-		ft_printf("%d bytes: %s\n", len, buffer);
+		printf("%d bytes: %s\n", len, buffer);
 	//write(connfd, "HTTP/1.0 200 OK\r\n\r\nHello sweety", 35);
-	if ((len = send(connfd, "HTTP/1.0 200 OK\r\n\r\nHello sweety", 35, 0)) < 0)
+	if ((len = send(connfd, "HTTP/1.0 200 OK\r\n\r\nHello sweetie", 35, 0)) < 0)
 		perror("send failure");
 	close(connfd);
 }

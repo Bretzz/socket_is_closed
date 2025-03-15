@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/15 00:23:43 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/15 01:26:55 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,6 +201,7 @@ void	*server_reciever(void *arg)
 	
 	recenv->index++;
 	pthread_mutex_unlock(&recenv->player_mutex);
+	
 	//how do I listen to multiple players?
 	//WAIT
 	pthread_t	tid;

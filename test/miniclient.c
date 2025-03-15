@@ -6,11 +6,24 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 01:20:06 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/13 17:14:35 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/15 01:37:40 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "socket_is_closed.h"
+//std libraries
+# include <stdlib.h>
+# include <unistd.h>
+# include <stdio.h> 
+# include <string.h>
+
+//net libraries
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+//# include <sys/types.h>
+# include <netdb.h>
+
+# define MYPORT 8080
 
 int main(void)
 {

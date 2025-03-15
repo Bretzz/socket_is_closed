@@ -10,3 +10,7 @@ from 127.0.0.1 and from local IP in the same session. (SOLVED with connect(3))
 NICE GUIDE: https://beej.us/guide/bgnet/html/split/
 
 next to_do: valgrind, hellgrind, general cleanup (remember backups on the way)
+
+HOLE PUNCHING for host succesion
+
+optimize server resend of info (just updated info)
