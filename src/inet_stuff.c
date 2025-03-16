@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:35:22 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/15 17:47:09 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/16 11:05:15 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ char	*get_locl_ip(char **env)
 	i = 0;
 	while (env[i] != NULL)
 	{
-		if (!ft_strncmp("LOCAL_IP=", env[i], 9))
+		if (!ft_strncmp("LOCAL_IP=", env[i], 9) && *(env[i] + 9) != '\0')
 			return (env[i] + 9);
 		i++;
 	}
@@ -62,11 +62,11 @@ char	*get_serv_ip(char **env)
 	i = 0;
 	while (env[i] != NULL)
 	{
-		if (!ft_strncmp("SERVER_IP=", env[i], 10))
+		if (!ft_strncmp("SERVER_IP=", env[i], 10) && *(env[i] + 10) != '\0')
 			return (env[i] + 10);
 		i++;
 	}
-	return ("ip not found");
+	return ("ip-not-found");
 }
 
 char	*get_my_name(char **env)
@@ -78,9 +78,9 @@ char	*get_my_name(char **env)
 	i = 0;
 	while (env[i] != NULL)
 	{
-		if (!ft_strncmp("NAME=", env[i], 5))
+		if (!ft_strncmp("NAME=", env[i], 5) && *(env[i] + 5) != '\0')
 			return (env[i] + 5);
 		i++;
 	}
-	return ("senzanome");
+	return ("no-name");
 }

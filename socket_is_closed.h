@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/15 17:34:55 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/16 13:19:19 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,23 +113,35 @@ typedef	struct s_recenv
 	pthread_mutex_t	player_mutex;
 }				t_recenv;
 
-//client
+/* CLIENT */
 
 int client_routine( int argc, char *argv[], char *env[]);
+int	handle_client_players(const char *buffer, t_recenv *recenv);
 
 //server
 
 int server_routine( int argc, char *argv[], char *env[]);
+int	register_player(int index, const char *player_data, int playersocket, t_player *player);
+int	handle_server_players(char *dead, int length, const char *buffer, t_recenv *recenv);
 
-//minigame
+/* MINIGAME */
 
 int				minigame(int my_pos, t_player *player);
 
+//inet comms
+
+char			*get_pos(char *buffer, t_player me);
+char			*get_death(char *buffer, t_player me);
+char			*get_lobby_stats(char *buffer, t_player *player);
+void			send_all(t_mlx *mlx, const char *msg, size_t msg_size);
+
+//players stats
+
 int				player_alive(t_player player);
 void			player_specs(t_player player);
-char 			*get_pos(char *buffer, t_point my_pos, t_point my_target, const char *my_ip);
+void			quick_stats(t_player *allPlayers);
 
-int 			server_duty(void);
+/* OTHER STUFF */
 
 //awesome functions
 

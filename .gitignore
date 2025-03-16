@@ -3,9 +3,8 @@
 **/*.a
 **/obj/*
 minilibx*
-server
 miniserver
-client
 miniclient
-minigame
-game*
+microgame
+game
+game.tar

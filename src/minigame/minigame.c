@@ -6,34 +6,11 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/15 17:39:58 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/16 13:01:17 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket_is_closed.h"
-
-static char *get_death(char *buffer, const char *my_ip);
-static void	send_all(t_mlx *mlx, const char *msg, size_t msg_size);
-
-void	player_specs(t_player player)
-{
-	ft_printf(CYAN);
-	ft_printf("PLAYER_IP    : %s\n", player.ip);
-	ft_printf("PLAYER_NAME  : %s\n", player.name);
-	ft_printf("PLAYER_SOCKET: %d\n", player.socket);
-	ft_printf("PLAYER_NUM   : %d\n", player.num);
-	ft_printf("PLAYER_POS   : %d_%d_%d\n", (int)player.pos.x, (int)player.pos.y, (int)player.pos.z);
-	ft_printf("PLAYER_TARGET: %d_%d_%d\n", (int)player.target.x, (int)player.target.y, (int)player.target.z);
-	ft_printf(RESET);
-
-}
-
-int	player_alive(t_player player)
-{
-	if (player.pos.x > 0 || player.pos.y > 0 || player.pos.z > 0)
-		return (1);
-	return (0);
-}
 
 static int clean_exit(t_mlx *mlx)
 {
@@ -118,7 +95,7 @@ static int	handle_player(t_player *player, t_mlx *mlx)
 			}
 			if (!put_line(mlx, player->pos, player->target, mlx->player[mlx->index].pos, 0xFFFFFF))
 			{
-				get_death(buffer, mlx->player[mlx->index].ip);
+				get_death(buffer, mlx->player[mlx->index]);
 				send_all(mlx, buffer, 45);
 				if (send(mlx->player[1].socket, "host:you", 8, 0) < 0 ) //note, the new host must shift himself to player[0] and put tomeone else to player[1]
 					perror(ERROR"sendto failed"RESET);
@@ -154,75 +131,6 @@ static int	put_board(t_mlx *mlx)
 	return (1);
 }
 
-static char *get_death(char *buffer, const char *my_ip)
-{
-	if (buffer == NULL)
-		return (NULL);
-	ft_memset(buffer, 0, sizeof(buffer));
-	ft_strlcpy(buffer, my_ip, 16);
-	ft_strlcat(buffer, ":", strlen(buffer) + 2);
-	ft_strlcat(buffer, "died", strlen(buffer) + 5);
-	return (buffer);
-}
-
-//buffer is a stack allocated mem
-/* static  */char *get_pos(char *buffer, t_point my_pos, t_point my_target, const char *my_ip)
-{
-	char	*coords[6];
-	
-	if (buffer == NULL)
-		return (NULL);
-	ft_memset(buffer, 0, sizeof(buffer));
-	coords[0] = ft_itoa((int)my_pos.x);
-	coords[1] = ft_itoa((int)my_pos.y);
-	coords[2] = ft_itoa((int)my_pos.z);
-	coords[3] = ft_itoa((int)my_target.x);
-	coords[4] = ft_itoa((int)my_target.y);
-	coords[5] = ft_itoa((int)my_target.z);
-	ft_strlcpy(buffer, my_ip, 16);
-	ft_strlcat(buffer, ":", strlen(buffer) + 2);
-	ft_strlcat(buffer, coords[0], strlen(buffer) + strlen(coords[0]) + 1);
-	ft_strlcat(buffer, "_", strlen(buffer) + 2);
-	ft_strlcat(buffer, coords[1], strlen(buffer) + strlen(coords[1]) + 1);
-	ft_strlcat(buffer, "_", strlen(buffer) + 2);
-	ft_strlcat(buffer, coords[2], strlen(buffer) + strlen(coords[2]) + 1);
-	if (my_target.x || my_target.y || my_target.z)
-	{
-		ft_strlcat(buffer, ":", strlen(buffer) + 2);
-		ft_strlcat(buffer, coords[3], strlen(buffer) + strlen(coords[3]) + 1);
-		ft_strlcat(buffer, "_", strlen(buffer) + 2);
-		ft_strlcat(buffer, coords[4], strlen(buffer) + strlen(coords[4]) + 1);
-		ft_strlcat(buffer, "_", strlen(buffer) + 2);
-		ft_strlcat(buffer, coords[5], strlen(buffer) + strlen(coords[5]) + 1);
-	}
-	free(coords[0]); free(coords[1]); free(coords[2]); free(coords[3]); free(coords[4]); free(coords[5]);
-	return (buffer);
-}
-
-static void	send_all(t_mlx *mlx, const char *msg, size_t msg_size)
-{
-	int	i;
-
-	ft_printf(GREEN"sending: %s\n"RESET, msg);
-	if (mlx->index != 0) //sendto host (ClientUDP)
-	{
-		if (send(mlx->player[0].socket, msg, msg_size, 0) < 0 )
-			perror(ERROR"sendto failed"RESET);
-		return ;
-	}
-	i = 1;
-	while (i < MAXPLAYERS) //sendto players (ServerUDP)
-	{
-		//ft_printf("sending to player: %s, socket: %i\n", mlx->player[i].ip, mlx->player[i].socket);
-		if (mlx->player[i].ip[0] != '\0')
-		{			
-			if (send(mlx->player[i].socket, msg, msg_size, 0) < 0 )
-				perror(ERROR"sendto failed"RESET);
-		}
-		i++;
-	}
-}
-
 static int	handle_mouse(int keysym, int x, int y, t_mlx *mlx)
 {
 	char	buffer[45];
@@ -233,10 +141,7 @@ static int	handle_mouse(int keysym, int x, int y, t_mlx *mlx)
 		mlx->player[mlx->index].target.y = y;
 		ft_printf("PIU-PIU!!!\n");
 		//player_specs(mlx->player[mlx->index]);
-		get_pos(buffer,
-			mlx->player[mlx->index].pos,
-			mlx->player[mlx->index].target,
-			mlx->player[mlx->index].ip);
+		get_pos(buffer, mlx->player[mlx->index]);
 		send_all(mlx, buffer, 45);
 	}
 	else
@@ -294,7 +199,7 @@ static int	handle_heypress(int keysym, t_mlx *mlx)
 		mlx->player[mlx->index].pos.x += 10;
 	else if (keysym == XK_Delete || keysym == 51)
 	{
-		get_death(buffer, mlx->player[mlx->index].ip);
+		get_death(buffer, mlx->player[mlx->index]);
 		send_all(mlx, buffer, 45);
 		clean_exit(mlx);
 		//return (0);
@@ -302,10 +207,7 @@ static int	handle_heypress(int keysym, t_mlx *mlx)
 	else
 		printf("Key Pressed: %i\n", keysym);
 	//player_specs(mlx->player[0]); player_specs(mlx->player[1]);
-	get_pos(buffer,
-		mlx->player[mlx->index].pos,
-		mlx->player[mlx->index].target,
-		mlx->player[mlx->index].ip);
+	get_pos(buffer, mlx->player[mlx->index]);
 	send_all(mlx, buffer, 45);
 	return (0);
 }
@@ -351,6 +253,7 @@ int	minigame(int index, t_player *player)
 	//game mechanics
 	mlx_mouse_hook(mlx.win, &handle_mouse, &mlx);
 	mlx_key_hook(mlx.win, &handle_heypress, &mlx);
+	mlx_do_key_autorepeaton(mlx.mlx);
 	
 	//window management
 	mlx_hook(mlx.win, DestroyNotify, StructureNotifyMask, &clean_exit, &mlx);

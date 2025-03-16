@@ -35,8 +35,10 @@ INKS			= -I$(CURDIR) -I$(LIBFT_DIR) -I$(MLX_DIR) -O3
 #source files (expected in the root folder)
 SRCS_DIR		=
 SRC_FILES		= main.c \
-				ClientUDP.c ServerUDP.c \
-				minigame.c ft_freentf.c convert_stuff.c inet_stuff.c
+				ClientUDP.c handle_client_players.c \
+				ServerUDP.c handle_server_players.c \
+				minigame.c game_inet.c player_stats.c \
+				ft_freentf.c convert_stuff.c inet_stuff.c
 SRCS			= $(addprefix $(SRCS_DIR), $(SRC_FILES))
 
 # Objects
@@ -44,7 +46,7 @@ OBJS_DIR		= obj/
 OBJ_FILES		= $(SRCS:.c=.o)
 OBJS			= $(addprefix $(OBJS_DIR), $(OBJ_FILES))
 
-VPATH 			= src
+VPATH 			= src src/minigame src/client src/server
 
 ifeq ($(UNAME),Darwin)
 	MLX_DIR		= minilibx_opengl
@@ -88,9 +90,9 @@ $(LIBFT):
 	@echo "${BOLD}creating libft...${RESET}"
 	@$(MAKE) -C $(LIBFT_DIR) --quiet
 
-minigame: minigame.c $(MLX) $(LIBFT)
-	@echo "${BOLD}compiling minigame...${RESET}"
-	@$(CC) $(CFLAGS) minigame.c $(MLX) $(LIBFT) $(LINKS) $(INKS) -o minigame \
+microgame: minigame.c $(MLX) $(LIBFT)
+	@echo "${BOLD}compiling microgame...${RESET}"
+	@$(CC) $(CFLAGS) src/minigame/* $(MLX) $(LIBFT) $(LINKS) $(INKS) -o microgame \
 	&& echo "${LIGHT_GREEN}DONE${RESET}"
 
 $(NAME): $(MLX) $(LIBFT) $(OBJS)
