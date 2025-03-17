@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:11:47 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/16 22:43:33 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 11:13:18 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,27 +136,19 @@ int	handle_server_players(char *dead, int length, const char *buffer, t_recenv *
 
 /* moves player[1] to player[0], then pushes up all the other players,
 filling the gaps.
-ex:
-[0]: host
-[1]: player1
-[2]: 
-[3]: player3
-->
-[0]: player1
-[1]: player3
 NOTE: the player poointer points to a stack allocated mem, no alloc or freezes. */
 void	server_player_pack(t_player *player)
 {
 	int	i[2];
-	int	slot;
 	
 	if (player == NULL)
 		return ;
 	i[0] = 1;
-	while (i[0] < MAXPLAYERS && player[i[0]].ip[0] != '\0')
+	while (i[0] < MAXPLAYERS && player[i[0]].ip[0] != '\0') //picks the oldest player alive
 		i[0]++;
 	move_player(i[0], 0, player);
-	i[0] = 1;
+	push_up(player);
+	/* i[0] = 1;
 	while (i[0] < MAXPLAYERS)
 	{
 		slot = next_free_slot(player);
@@ -171,5 +163,5 @@ void	server_player_pack(t_player *player)
 			i[1]++;
 		}
 		i[0]++;
-	}
+	} */
 }

@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:04:43 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/17 10:38:27 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 11:57:23 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,4 +169,17 @@ int	handle_client_players(const char *buffer, t_recenv *recenv)
 	ft_printf(RESET);
 	ft_freentf("2", split);
 	return (1);
+}
+
+/* moves the player with ip equal to 'servip' to player[0].
+then pushes all the other player up.
+NOTE: the client will remain at player[1]. */
+void	client_player_pack(char *servip, t_player *player)
+{
+	int	i;
+	int	len;
+
+	len = ft_strlen(servip);
+	i = 0;
+	while (i < MAXPLAYERS && ft_strncmp(servip, player[i].ip, ))
 }

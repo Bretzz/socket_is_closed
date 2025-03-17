@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/17 01:06:26 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 11:09:52 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,7 @@ void			quick_stats(t_player *allPlayers);
 
 t_player		*move_player(int dest, int src, t_player *player);
 int				next_free_slot(t_player *player);
+void 			push_up(t_player *player);
 
 //awesome functions
 
@@ -157,8 +158,8 @@ char	*get_locl_ip(char **env);
 char	*get_serv_ip(char **env);
 char	*get_my_name(char **env);
 
-int	make_me_host(char **env);
-int	make_him_host(char *ip, char **env);
+int		make_me_host(char **env);
+int		make_him_host(char *ip, char **env);
 
 int		is_ip(const char *s);
 
