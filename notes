@@ -16,7 +16,7 @@ lore:
     2. optimize server resend of info (just updated info)
 
 cleanup my mess :D [! ! !remember BACKUPS on the way! ! !]
-    1. free allocs
+    1. free allocs (recenv in server e client)
     2. close sockets
     3. destroy mutex
     4. check data races

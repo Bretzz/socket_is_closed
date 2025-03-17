@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 12:56:41 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/16 12:59:10 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/16 21:16:41 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,10 @@ void	quick_stats(t_player *allPlayers)
 	i = 0;
 	while(allPlayers[i].ip[0] != '\0')
 	{
-		printf("%-15s:%s at %d_%d_%d\n",
+		printf("%10s:%-15s%s %d_%d_%d\n", //fix format
 			allPlayers[i].name,
 			allPlayers[i].ip,
+			"at",
 			(int)allPlayers[i].pos.x,
 			(int)allPlayers[i].pos.y,
 			(int)allPlayers[i].pos.z);

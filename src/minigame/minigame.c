@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 23:13:08 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/16 13:01:17 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 01:22:03 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,17 @@
 
 static int clean_exit(t_mlx *mlx)
 {
+	char	buffer[80];
+	char	minibuffer[35];
+	
+	get_death(buffer, mlx->player[*mlx->index]);
+	if (*mlx->index == 0)
+	{
+		get_host_update(minibuffer, mlx->player);
+		ft_strlcat(buffer, "\n", ft_strlen(buffer) + 2);
+		ft_strlcat(buffer, minibuffer, ft_strlen(buffer) + ft_strlen(minibuffer) + 1);
+	}
+	send_all(mlx, buffer, sizeof(buffer));
 	mlx_destroy_window(mlx->mlx, mlx->win);
 	//mlx_destroy_display(mlx->mlx);
 	free(mlx->mlx);
@@ -28,7 +39,7 @@ static int	juice_the_pc(t_mlx *mlx)
 		return (1);
 	mlx->win_x = MLX_WIN_X;
 	mlx->win_y = MLX_WIN_Y;
-	mlx->win = mlx_new_window(mlx->mlx, MLX_WIN_X, MLX_WIN_Y, mlx->player[mlx->index].name);
+	mlx->win = mlx_new_window(mlx->mlx, MLX_WIN_X, MLX_WIN_Y, mlx->player[*mlx->index].name);
 	if (!mlx->win)
 	{
 		free(mlx->mlx);
@@ -78,9 +89,8 @@ static void	my_pixel_put(void *my_struct, int x, int y, float z, unsigned int co
 static int	handle_player(t_player *player, t_mlx *mlx)
 {
 	static int	lineframes[2];
-	char		buffer[45];
 	
-	/* if (mlx->index != 0)
+	/* if (*mlx->index != 0)
 		ft_printf("player '%s' putting...\n", player->ip); */
 	if (player->ip[0] != '\0')
 	{
@@ -93,14 +103,12 @@ static int	handle_player(t_player *player, t_mlx *mlx)
 				lineframes[player->num] = 0;
 				return (1);
 			}
-			if (!put_line(mlx, player->pos, player->target, mlx->player[mlx->index].pos, 0xFFFFFF))
-			{
-				get_death(buffer, mlx->player[mlx->index]);
-				send_all(mlx, buffer, 45);
-				if (send(mlx->player[1].socket, "host:you", 8, 0) < 0 ) //note, the new host must shift himself to player[0] and put tomeone else to player[1]
-					perror(ERROR"sendto failed"RESET);
+			if (!put_line(mlx,
+				player->pos,
+				player->target,
+				mlx->player[*mlx->index].pos,
+				0xFFFFFF))
 				clean_exit(mlx);
-			}
 			lineframes[player->num]++;
 			//ft_memset(&player->target, 0, sizeof(t_point));
 			//player_specs(*player);
@@ -137,11 +145,11 @@ static int	handle_mouse(int keysym, int x, int y, t_mlx *mlx)
 
 	if (keysym == 1) // keysym == 1
 	{
-		mlx->player[mlx->index].target.x = x;
-		mlx->player[mlx->index].target.y = y;
+		mlx->player[*mlx->index].target.x = x;
+		mlx->player[*mlx->index].target.y = y;
 		ft_printf("PIU-PIU!!!\n");
-		//player_specs(mlx->player[mlx->index]);
-		get_pos(buffer, mlx->player[mlx->index]);
+		//player_specs(mlx->player[*mlx->index]);
+		get_pos(buffer, mlx->player[*mlx->index]);
 		send_all(mlx, buffer, 45);
 	}
 	else
@@ -155,9 +163,9 @@ static int	handle_UpDw_press(int keysym, void *arg)
 
 	mlx = (t_mlx *)arg;
 	if (keysym == XK_Down || keysym == XK_s || keysym == 125 || keysym == 1)
-		mlx->player[mlx->index].pos.y += 10;
+		mlx->player[*mlx->index].pos.y += 10;
 	else if (keysym == XK_Up || keysym == XK_w || keysym == 126 || keysym == 13)
-		mlx->player[mlx->index].pos.y -= 10;
+		mlx->player[*mlx->index].pos.y -= 10;
 	return (0);
 }
 
@@ -167,9 +175,9 @@ static int	handle_LxRx_press(int keysym, void *arg)
 
 	mlx = (t_mlx *)arg;
 	if (keysym == XK_Left || keysym == XK_a || keysym == 123 || keysym == 0)
-		mlx->player[mlx->index].pos.x -= 10;
+		mlx->player[*mlx->index].pos.x -= 10;
 	else if (keysym == XK_Right || keysym == XK_d || keysym == 124 || keysym == 2)
-		mlx->player[mlx->index].pos.x += 10;
+		mlx->player[*mlx->index].pos.x += 10;
 	return (0);
 }
 
@@ -190,24 +198,22 @@ static int	handle_heypress(int keysym, t_mlx *mlx)
 		}
 	}
 	else if (keysym == XK_Down || keysym == XK_s || keysym == 125 || keysym == 1)
-		mlx->player[mlx->index].pos.y += 10;
+		mlx->player[*mlx->index].pos.y += 10;
 	else if (keysym == XK_Up || keysym == XK_w || keysym == 126 || keysym == 13)
-		mlx->player[mlx->index].pos.y -= 10;
+		mlx->player[*mlx->index].pos.y -= 10;
 	else if (keysym == XK_Left || keysym == XK_a || keysym == 123 || keysym == 0)
-		mlx->player[mlx->index].pos.x -= 10;
+		mlx->player[*mlx->index].pos.x -= 10;
 	else if (keysym == XK_Right || keysym == XK_d || keysym == 124 || keysym == 2)
-		mlx->player[mlx->index].pos.x += 10;
+		mlx->player[*mlx->index].pos.x += 10;
 	else if (keysym == XK_Delete || keysym == 51)
 	{
-		get_death(buffer, mlx->player[mlx->index]);
-		send_all(mlx, buffer, 45);
 		clean_exit(mlx);
 		//return (0);
 	}
 	else
 		printf("Key Pressed: %i\n", keysym);
 	//player_specs(mlx->player[0]); player_specs(mlx->player[1]);
-	get_pos(buffer, mlx->player[mlx->index]);
+	get_pos(buffer, mlx->player[*mlx->index]);
 	send_all(mlx, buffer, 45);
 	return (0);
 }
@@ -236,7 +242,7 @@ static int	update_frame(t_mlx *mlx)
 	return (0);
 }
 
-int	minigame(int index, t_player *player)
+int	minigame(int *index, t_player *player)
 {
 	t_mlx	mlx;
 

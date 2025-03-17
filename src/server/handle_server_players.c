@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:11:47 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/16 13:13:36 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/16 22:43:33 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,4 +132,44 @@ int	handle_server_players(char *dead, int length, const char *buffer, t_recenv *
 	printf("%-15s at %d_%d_%d\n", recenv->player[1].ip, (int)recenv->player[1].pos.x, (int)recenv->player[1].pos.y, (int)recenv->player[1].pos.z); */
 	ft_printf(RESET);
 	return (ft_freentf("2", split), 1);
+}
+
+/* moves player[1] to player[0], then pushes up all the other players,
+filling the gaps.
+ex:
+[0]: host
+[1]: player1
+[2]: 
+[3]: player3
+->
+[0]: player1
+[1]: player3
+NOTE: the player poointer points to a stack allocated mem, no alloc or freezes. */
+void	server_player_pack(t_player *player)
+{
+	int	i[2];
+	int	slot;
+	
+	if (player == NULL)
+		return ;
+	i[0] = 1;
+	while (i[0] < MAXPLAYERS && player[i[0]].ip[0] != '\0')
+		i[0]++;
+	move_player(i[0], 0, player);
+	i[0] = 1;
+	while (i[0] < MAXPLAYERS)
+	{
+		slot = next_free_slot(player);
+		i[1] = slot + 1;
+		while (i[1] < MAXPLAYERS)
+		{
+			if (player[i[1]].ip[0] != '\0')
+			{
+				move_player(i[1], slot, player);
+				break ;
+			}
+			i[1]++;
+		}
+		i[0]++;
+	}
 }

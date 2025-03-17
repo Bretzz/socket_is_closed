@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:04:43 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/16 13:08:21 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 01:24:00 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,42 @@ static int	update_player(const char *ip, const char *coords, const char *target,
 
 static int	kill_player(t_player *player)
 {
-	ft_printf(KILL"killed player %s%s\n", player->ip, RESET);
+	ft_printf(KILL"killed %s%s\n", player->name, RESET);
 	ft_memset(player, 0, sizeof(t_player));
 	return (1);
+}
+
+/* NOTE: could be that the next message sent after 'host:died' isn't 'new-host:ip'.
+NOOT TRUE IF WE GO WITH THE MULTI LINE TECH.
+for now we assume the next message will be a 'new-host:ip' assignment.
+NOTE: socket will be closed after the return by the reciever,
+and the reciever thread will die cuz we went trough with the -1 return. */
+static int	new_host_check(char *buffer, t_recenv *recenv)
+{
+	char	**split;
+
+	split = ft_split(buffer, ':');
+	if (split == NULL)
+		return (0);
+	if (!ft_strncmp("new-host", split[0], 8))
+	{
+		if (!ft_strncmp(recenv->player[1].ip, split[2], ft_strlen(split[2]))
+			&& !ft_strncmp(recenv->player[1].name, split[1], ft_strlen(split[1])))
+		{
+			make_me_host(recenv->env);
+			server_player_pack(recenv->player);
+			*recenv->id = 0; //index update for minigame
+			if (server_routine(recenv->player, 0, NULL, recenv->env) != 0)
+				return (ft_freentf("2", split), -1);
+			return (ft_freentf("2", split), 3);
+		}
+		//client redirect stuff
+		make_him_host(split[2], recenv->env);
+		client_routine(recenv->player, recenv->id, NULL, recenv->env);
+		return (ft_freentf("2", split), 2);
+			
+	}
+	return (ft_freentf("2", split), 1);
 }
 
 static int	one_player_data(const char *buffer, t_recenv *recenv)
@@ -124,12 +157,14 @@ int	handle_client_players(const char *buffer, t_recenv *recenv)
 	while (split[i] != NULL)
 	{
 		if (one_player_data(split[i++], recenv) < 0)
+		{
+			if (new_host_check(split[i], recenv) < 0)
+				exit(EXIT_FAILURE); //clean up the mess plss
 			return (ft_freentf("2", split), -1);
+		}
 	}
 	ft_printf(STATS);
 	quick_stats(recenv->player);
-	/* printf("%-15s at %d_%d_%d\n", recenv->player[0].ip, (int)recenv->player[0].pos.x, (int)recenv->player[0].pos.y, (int)recenv->player[0].pos.z);
-	printf("%-15s at %d_%d_%d\n", recenv->player[1].ip, (int)recenv->player[1].pos.x, (int)recenv->player[1].pos.y, (int)recenv->player[1].pos.z); */
 	ft_printf(RESET);
 	ft_freentf("2", split);
 	return (1);

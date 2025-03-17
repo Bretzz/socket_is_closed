@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 12:51:37 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/16 13:18:49 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 01:14:59 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,37 @@
 char	*get_pos(char *buffer, t_player me);
 char	*get_death(char *buffer, t_player me);
 char	*get_lobby_stats(char *buffer, t_player *player);
+char	*get_host_update(char *buffer, t_player *player);
 void	send_all(t_mlx *mlx, const char *msg, size_t msg_size);
+
+//buffsize expected: >35
+char	*get_host_update(char *buffer, t_player *player)
+{
+	int	i;
+
+	if (buffer == NULL || player == NULL)
+		return (NULL);
+	i = 1;
+	while (i < MAXPLAYERS && player[i].ip[0] == '\0')
+		i++;
+	ft_memset(buffer, 0, 25);
+	ft_strlcpy(buffer, "new-host:", 10);
+	ft_strlcat(buffer, player[i].name, ft_strlen(player[i].name) + 10);
+	ft_strlcat(buffer, ":", ft_strlen(buffer) + 2);
+	ft_strlcat(buffer, player[i].ip, ft_strlen(buffer) + ft_strlen(player[i].ip) + 1);
+	return (buffer);
+}
 
 /* buffer is a stack allocated mem,
 fills the buffer with get_pos() calls on the various players. */
 char	*get_lobby_stats(char *buffer, t_player *player)
 {
 	int	i;
-	char	minibuffer[45];
+	char	minibuffer[55];
 
 	if (buffer == NULL || player == NULL)
 		return (NULL);
-	ft_memset(buffer, 0, (MAXPLAYERS + 1) * 45 * sizeof(char));
+	ft_memset(buffer, 0, (MAXPLAYERS + 1) * sizeof(minibuffer) * sizeof(char));
 	i = 0;
 	while (i < MAXPLAYERS)
 	{
@@ -41,7 +60,7 @@ char	*get_lobby_stats(char *buffer, t_player *player)
 	return (buffer);
 }
 
-//buffer is a stack allocated mem, buffsize needed 35
+//buffer is a stack allocated mem, buffsize needed >35
 char *get_death(char *buffer, t_player me)
 {
 	if (buffer == NULL)
@@ -96,7 +115,7 @@ void	send_all(t_mlx *mlx, const char *msg, size_t msg_size)
 	int	i;
 
 	ft_printf(GREEN"sending: %s\n"RESET, msg);
-	if (mlx->index != 0) //sendto host (ClientUDP)
+	if (*mlx->index != 0) //sendto host (ClientUDP)
 	{
 		if (send(mlx->player[0].socket, msg, msg_size, 0) < 0 )
 			perror(ERROR"sendto failed"RESET);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:00:20 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/12 19:55:26 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/03/17 01:19:01 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,25 @@
 
 int	main(int argc, char *argv[], char *env[])
 {
+	t_player	player[MAXPLAYERS];
+	int			index;
+	
+	(void)argc;
+	ft_memset(&player, 0, MAXPLAYERS * sizeof(t_player));
 	if (ft_strncmp("host", get_serv_ip(env), 4) == 0)
-		server_routine(argc, argv, env);
+	{
+		if (server_routine(player, &index, argv, env) != 0)
+			return (1);
+		usleep(1000); //segfaults without it, prolly it needs the init to be executed
+		index = 0;
+		minigame(&index, &player[0]);
+	}
 	else
-		client_routine(argc, argv, env);
+	{
+		client_routine(player, &index, argv, env);
+		usleep(1000);
+		index = 1;
+		minigame(&index, &player[0]);
+	}
 	return (0);
 }

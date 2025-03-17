@@ -38,7 +38,7 @@ SRC_FILES		= main.c \
 				ClientUDP.c handle_client_players.c \
 				ServerUDP.c handle_server_players.c \
 				minigame.c game_inet.c player_stats.c \
-				ft_freentf.c convert_stuff.c inet_stuff.c
+				ft_freentf.c convert_stuff.c inet_stuff.c player_stuff.c
 SRCS			= $(addprefix $(SRCS_DIR), $(SRC_FILES))
 
 # Objects

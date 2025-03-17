@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:35:22 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/16 11:05:15 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 01:05:59 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,44 @@ char	*get_my_name(char **env)
 		i++;
 	}
 	return ("no-name");
+}
+
+int	make_me_host(char **env)
+{
+	int	i;
+
+	if (env == NULL)
+		return (0);
+	i = 0;
+	while (env[i] != NULL)
+	{
+		if (!strncmp("SERVER_IP=", env[i], 10) && *(env[i] + 10) != '\0')
+		{
+			ft_memset(env[i] + 10, 0, ft_strlen(env[i] + 10));
+			ft_memmove(env[i] + 10, "host", 4);
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
+int	make_him_host(char *ip, char **env)
+{
+	int	i;
+
+	if (ip == NULL || env == NULL)
+		return (0);
+	i = 0;
+	while (env[i] != NULL)
+	{
+		if (!strncmp("SERVER_IP=", env[i], 10) && *(env[i] + 10) != '\0')
+		{
+			ft_memset(env[i] + 10, 0, ft_strlen(env[i] + 10));
+			ft_memmove(env[i] + 10, ip, ft_strlen(ip));
+			return (1);
+		}
+		i++;
+	}
+	return (0);
 }

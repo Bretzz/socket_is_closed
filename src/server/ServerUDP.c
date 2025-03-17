@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/16 13:22:05 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 01:24:50 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,10 @@ static void	*server_reciever(void *arg)
 	ft_memset(&clientaddr, 0, sizeof(struct sockaddr_in));
 	if ((connfd = accept(recenv->socket, (struct sockaddr *)&clientaddr, &addrlen)) < 0)
 		perror(ERROR"accept failed"RESET);
+	else
+		ft_printf(GREEN"connection accepted!\n"RESET);
 	
 	//pthread_mutex_lock(&recenv->player_mutex); //no other thread will accept another connection since it isn't spawned yet
-	ft_printf(GREEN"connection accepted!\n"RESET);
 
 	int	len;
 	char buffer[MAXLINE] = { 0 };
@@ -48,7 +49,6 @@ static void	*server_reciever(void *arg)
 
 	recenv->player[my_index].mutex = &recenv->player_mutex;
 	register_player(my_index, buffer, connfd, recenv->player); //register player one
-	
 	//server signature name:ip
 	ft_memset(buffer, 0, MAXLINE);
 	ft_strlcpy(buffer, get_my_name(recenv->env), 11); //last place with name length capped to 10
@@ -57,7 +57,12 @@ static void	*server_reciever(void *arg)
 	//send test "HTTP/1.0 200 OK\r\n\r\nHello sweety"
 	if (send(recenv->player[my_index].socket, buffer, ft_strlen(buffer), 0) < 0)
 		perror(ERROR"send failure"RESET);
-	
+
+	ft_memset(buffer, 0, MAXLINE);
+	get_lobby_stats(buffer, recenv->player);
+	if (send(recenv->player[my_index].socket, buffer, ft_strlen(buffer), 0) < 0)
+		perror(ERROR"send failure"RESET);
+
 	recenv->index++;
 	//pthread_mutex_unlock(&recenv->player_mutex);
 	
@@ -85,15 +90,15 @@ static void	*server_reciever(void *arg)
 		ft_printf(YELLOW"%d bytes: '%s' from %s\n"RESET, len, buffer, inet_ntoa(addrin.sin_addr));
 		handle_server_players(&dead, len, buffer, recenv);
 	}
-	ft_printf(KILL"player %i is dead %s\n", my_index, RESET); //because we are zeroing it...
+	ft_printf(KILL"player %i is dead%s\n", my_index, RESET); //because we are zeroing it...
 	return (NULL);
 }
 
 /* initialize the listening fd */
 static int	host_player_init(t_player *player, char **env)
 {
-	int listfd;
-	struct sockaddr_in serveraddr;
+	struct	sockaddr_in serveraddr;
+	int 	listfd;
 	
 	if ((listfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		return (perror(ERROR"socket failure"RESET), -1);
@@ -114,20 +119,17 @@ static int	host_player_init(t_player *player, char **env)
 	//player[0] 'host' data init
 	ft_memmove(&player[0].ip, get_serv_ip(env), 15);
 	ft_memmove(&player[0].name, get_my_name(env), 10);
-	ft_strlcat(player[0].name, "_host", ft_strlen(player[0].name) + 6);
+	//ft_strlcat(player[0].name, "_host", ft_strlen(player[0].name) + 6);
 	player[0].num = 0;
 	return(listfd);
 }
 
-int server_routine( int argc, char *argv[], char *env[])
+int server_routine(t_player *player, int *id, char *argv[], char *env[])
 {
-	(void)argc; (void)argv;
+	(void)id; (void)argv;
 
 	int listfd;
 	ft_printf("LOCAL_IP=%s, SERVER_IP=%s\n", get_locl_ip(env), get_serv_ip(env));
-
-	t_player player[MAXPLAYERS];
-	ft_memset(&player, 0, MAXPLAYERS * sizeof(t_player));
 	
 	//player init
 	if ((listfd = host_player_init(&player[0], env)) < 0)
@@ -135,23 +137,26 @@ int server_routine( int argc, char *argv[], char *env[])
 
 	player_specs(player[0]);
 
-	pthread_t	tid;
-	t_recenv	recenv;
+	t_recenv	*recenv;
+	recenv = (t_recenv *)ft_calloc(1, sizeof(t_recenv));
+	if (recenv == NULL)
+		return (ft_printf("malloc failure\n"), 1);
 
-	recenv.env = env;
-	recenv.player = player;
-	recenv.socket = listfd;
-	recenv.index = 1; //next player index
+	recenv->env = env;
+	recenv->player = player;
+	recenv->socket = listfd;
+	recenv->index = 1; //next player index
 
-	if (pthread_mutex_init(&recenv.player_mutex, NULL) != 0)
+	if (pthread_mutex_init(&recenv->player_mutex, NULL) != 0)
 		perror(ERROR"mutex init failed"RESET);
 
 	//reciever
-	if (pthread_create(&tid, NULL, &server_reciever, &recenv) < 0)
+	pthread_t	tid;
+	if (pthread_create(&tid, NULL, &server_reciever, recenv) < 0)
 		perror(ERROR"reciever launch failed"RESET);
 	pthread_detach(tid);	//since if we died as server we don't need to wait the other listener
 
-	minigame(0, &player[0]);
+	//minigame(0, &player[0]);
 
 	//pthread_join(tid, NULL);
 	//close( sendfd );

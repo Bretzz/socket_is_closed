@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/16 13:08:05 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 01:04:11 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 static void	*client_reciever(void *arg)
 {
 	t_recenv	*recenv;
+	char		buffer[MAXLINE];
 	int			len;
 
 	recenv = (t_recenv *)arg;
-	
-	char buffer[MAXLINE];
 	while ( 1 )
 	{
+		ft_memset(buffer, 0, MAXLINE);
 		ft_printf("talk to me...\n");
 		len = recv( recenv->player[0].socket, buffer, MAXLINE - 1, 0 );
 		if ( len < 0 ) {
@@ -32,10 +32,11 @@ static void	*client_reciever(void *arg)
 		if (handle_client_players(buffer, recenv) < 0)
 		{
 			ft_printf(HOST"A NEW HOST WILL RISE%s\n", RESET);
-			return (close(recenv->player[0].socket), NULL);
+			return (close(recenv->player[0].socket), free(recenv), NULL);
 		}
 	}
 	close(recenv->player[0].socket);
+	free(recenv);
 	return (NULL);
 }
 
@@ -90,15 +91,12 @@ static int client_player_init(t_player *player, char **env)
 	return (1);
 }
 
-int client_routine( int argc, char *argv[], char *env[])
+int client_routine(t_player *player, int *id, char *argv[], char *env[])
 {
-	(void)argc; (void)argv;
+	(void)argv;
+	//player[0] = server, player[1] = client
 
 	ft_printf("LOCAL_IP=%s, SERVER_IP=%s\n", get_locl_ip(env), get_serv_ip(env));
-
-	//player[0] = server, player[1] = client
-	t_player player[MAXPLAYERS];
-	ft_memset(&player, 0, MAXPLAYERS * sizeof(t_player));
 
 	//initialize the data to connect to the server
 	if (!client_player_init(&player[0], env))
@@ -110,18 +108,23 @@ int client_routine( int argc, char *argv[], char *env[])
 	player_specs(player[1]);
 	ft_printf("= == == == = =\n");
 
-	t_recenv	recenv;
+	t_recenv	*recenv;
+	recenv = (t_recenv *)ft_calloc(1, sizeof(t_recenv));
+	if (recenv == NULL)
+		return (ft_printf("malloc failure\n"), 1);
 	
-	recenv.env = env;
-	recenv.player = &player[0];
+	recenv->env = env;
+	recenv->id = id;
+	recenv->player = &player[0];
 	
 	//reciever
 	pthread_t	tid;
-	if (pthread_create(&tid, NULL, &client_reciever, &recenv) < 0)
+	if (pthread_create(&tid, NULL, &client_reciever, recenv) < 0)
 		perror(ERROR"reciever launch failed"RESET);
+	pthread_detach(tid);
 
-	minigame(1, &player[0]);
+	//minigame(1, &player[0]);
 
-	pthread_join(tid, NULL);
+	//pthread_join(tid, NULL);
 	return (0);
 }

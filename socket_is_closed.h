@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 22:51:31 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/16 13:19:19 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 01:06:26 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 
 # define MYPORT 42042
 # define MAXLINE 1024 
-# define MAXPLAYERS 3
+# define MAXPLAYERS 5
 
 # define MLX_WIN_X 500
 # define MLX_WIN_Y 500
@@ -101,13 +101,14 @@ typedef struct s_mlx
 	void			*win;
 	t_img			img;
 	t_player		*player;
-	int				index;
+	int				*index;
 }				t_mlx;		
 
 typedef	struct s_recenv
 {
 	int				socket;
 	char			**env;
+	int				*id;
 	unsigned int	index;
 	t_player		*player;
 	pthread_mutex_t	player_mutex;
@@ -115,24 +116,26 @@ typedef	struct s_recenv
 
 /* CLIENT */
 
-int client_routine( int argc, char *argv[], char *env[]);
-int	handle_client_players(const char *buffer, t_recenv *recenv);
+int 	client_routine(t_player *player, int *id, char *argv[], char *env[]);
+int		handle_client_players(const char *buffer, t_recenv *recenv);
 
-//server
+/* SERVER */
 
-int server_routine( int argc, char *argv[], char *env[]);
-int	register_player(int index, const char *player_data, int playersocket, t_player *player);
-int	handle_server_players(char *dead, int length, const char *buffer, t_recenv *recenv);
+int 	server_routine(t_player *player, int *id, char *argv[], char *env[]);
+int		register_player(int index, const char *player_data, int playersocket, t_player *player);
+int		handle_server_players(char *dead, int length, const char *buffer, t_recenv *recenv);
+void	server_player_pack(t_player *player);
 
 /* MINIGAME */
 
-int				minigame(int my_pos, t_player *player);
+int				minigame(int *index, t_player *player);
 
 //inet comms
 
 char			*get_pos(char *buffer, t_player me);
 char			*get_death(char *buffer, t_player me);
 char			*get_lobby_stats(char *buffer, t_player *player);
+char			*get_host_update(char *buffer, t_player *player);
 void			send_all(t_mlx *mlx, const char *msg, size_t msg_size);
 
 //players stats
@@ -143,11 +146,19 @@ void			quick_stats(t_player *allPlayers);
 
 /* OTHER STUFF */
 
+//t_player handling
+
+t_player		*move_player(int dest, int src, t_player *player);
+int				next_free_slot(t_player *player);
+
 //awesome functions
 
 char	*get_locl_ip(char **env);
 char	*get_serv_ip(char **env);
 char	*get_my_name(char **env);
+
+int	make_me_host(char **env);
+int	make_him_host(char *ip, char **env);
 
 int		is_ip(const char *s);
 
