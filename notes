@@ -26,3 +26,7 @@ next-to-do:
     client_player_stack()   "moves the new host at the top" (and check for init bugs)
     host relink after transfer (shouldn't register new players if the old ones try to connect)
     draw how the program works
+
+future fixes:
+    spam stream afterr rdeath (localhost)
+    new-host:�1:�#׼�

@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:04:43 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/17 01:24:00 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 10:38:27 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ static int	new_host_check(char *buffer, t_recenv *recenv)
 		}
 		//client redirect stuff
 		make_him_host(split[2], recenv->env);
+		usleep(1000); //wait for host init
 		client_routine(recenv->player, recenv->id, NULL, recenv->env);
 		return (ft_freentf("2", split), 2);
 			

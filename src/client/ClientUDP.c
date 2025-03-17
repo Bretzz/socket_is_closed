@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/17 01:04:11 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 10:38:41 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static int client_player_init(t_player *player, char **env)
 
 	if (connect(servfd, (struct sockaddr *)&serveraddr, sizeof(struct sockaddr)))
 	{
-		perror(ERROR"connectin failed"RESET);
+		perror(ERROR"connection failed"RESET);
 		return (0);
 	}
 	ft_printf(GREEN"connection accepted!!!\n"RESET);
@@ -91,6 +91,7 @@ static int client_player_init(t_player *player, char **env)
 	return (1);
 }
 
+//0 ok, 1 error
 int client_routine(t_player *player, int *id, char *argv[], char *env[])
 {
 	(void)argv;
@@ -100,7 +101,7 @@ int client_routine(t_player *player, int *id, char *argv[], char *env[])
 
 	//initialize the data to connect to the server
 	if (!client_player_init(&player[0], env))
-		return (0);
+		return (1);
 
 	ft_printf("===  HOST  ===\n");
 	player_specs(player[0]);

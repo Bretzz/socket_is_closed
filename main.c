@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:00:20 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/17 01:19:01 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 10:37:59 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ int	main(int argc, char *argv[], char *env[])
 	}
 	else
 	{
-		client_routine(player, &index, argv, env);
+		if (client_routine(player, &index, argv, env) != 0)
+			return (1);
 		usleep(1000);
 		index = 1;
 		minigame(&index, &player[0]);

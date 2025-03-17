@@ -6,7 +6,7 @@
 /*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:35:22 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/17 01:05:59 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 10:35:47 by totommi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char	*get_locl_ip(char **env)
 			return (env[i] + 9);
 		i++;
 	}
-	return ("ip not found");
+	return ("ip-not-found");
 }
 
 char	*get_serv_ip(char **env)
