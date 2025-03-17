@@ -20,3 +20,9 @@ cleanup my mess :D [! ! !remember BACKUPS on the way! ! !]
     2. close sockets
     3. destroy mutex
     4. check data races
+
+next-to-do:
+    push_up() "pushes all player up"
+    client_player_stack()   "moves the new host at the top" (and check for init bugs)
+    host relink after transfer (shouldn't register new players if the old ones try to connect)
+    draw how the program works
