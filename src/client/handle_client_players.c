@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_client_players.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:04:43 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/17 11:57:23 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 15:30:03 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static int	new_host_check(char *buffer, t_recenv *recenv)
 			make_me_host(recenv->env);
 			server_player_pack(recenv->player);
 			*recenv->id = 0; //index update for minigame
-			if (server_routine(recenv->player, 0, NULL, recenv->env) != 0)
+			if (server_routine(recenv->player, recenv->id, NULL, recenv->env) != 0)
 				return (ft_freentf("2", split), -1);
 			return (ft_freentf("2", split), 3);
 		}
@@ -144,14 +144,14 @@ static int	one_player_data(const char *buffer, t_recenv *recenv)
 	return (1);
 }
 
-/* moves the server's player 'player[0]'. 
-NOTE: the 'player[1]' is moved by the minigame. */
+/* updates all the player positions, also 'died' message is handled. 
+NOTE: the 'player[1]' is updated by the minigame. */
 int	handle_client_players(const char *buffer, t_recenv *recenv)
 {
 	char	**split;
 	int		i;
 
-	split = ft_split(buffer, '\n'); //not used, but eventually can hanndle more than one player data
+	split = ft_split(buffer, '\n'); //not used, but eventually can handle more than one player data
 	if (split == NULL || recenv == NULL)
 		return (0);
 	i = 0;
@@ -169,17 +169,4 @@ int	handle_client_players(const char *buffer, t_recenv *recenv)
 	ft_printf(RESET);
 	ft_freentf("2", split);
 	return (1);
-}
-
-/* moves the player with ip equal to 'servip' to player[0].
-then pushes all the other player up.
-NOTE: the client will remain at player[1]. */
-void	client_player_pack(char *servip, t_player *player)
-{
-	int	i;
-	int	len;
-
-	len = ft_strlen(servip);
-	i = 0;
-	while (i < MAXPLAYERS && ft_strncmp(servip, player[i].ip, ))
 }

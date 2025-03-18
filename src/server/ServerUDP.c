@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerUDP.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/17 01:24:50 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 15:30:56 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,13 +138,14 @@ int server_routine(t_player *player, int *id, char *argv[], char *env[])
 	player_specs(player[0]);
 
 	t_recenv	*recenv;
-	recenv = (t_recenv *)ft_calloc(1, sizeof(t_recenv));
+	recenv = (t_recenv *)ft_calloc(1, sizeof(t_recenv)); //is it free'd?
 	if (recenv == NULL)
 		return (ft_printf("malloc failure\n"), 1);
 
 	recenv->env = env;
 	recenv->player = player;
 	recenv->socket = listfd;
+	recenv->id = id;
 	recenv->index = 1; //next player index
 
 	if (pthread_mutex_init(&recenv->player_mutex, NULL) != 0)

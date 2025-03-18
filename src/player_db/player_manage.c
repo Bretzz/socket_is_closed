@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   player_stuff.c                                     :+:      :+:    :+:   */
+/*   player_manage.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 22:01:30 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/17 11:15:14 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 15:24:54 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,4 +72,34 @@ void push_up(t_player *player)
 		}
 		i[0]++;
 	}
+}
+
+/* moves player[1] to player[0], then pushes up all the other players,
+filling the gaps.
+NOTE: the player poointer points to a stack allocated mem, no alloc or freezes. */
+void	server_player_pack(t_player *player)
+{
+	int	i[2];
+	
+	if (player == NULL)
+		return ;
+	i[0] = 1;
+	while (i[0] < MAXPLAYERS && player[i[0]].ip[0] != '\0') //picks the oldest player alive
+		i[0]++;
+	move_player(i[0], 0, player);
+	push_up(player);
+}
+
+/* moves the player with ip equal to 'servip' to player[0].
+then pushes all the other player up.
+NOTE: the client will remain at player[1]. */
+void	client_player_pack(char *servip, t_player *player)
+{
+	int	i;
+
+	i = 0;
+	while (i < MAXPLAYERS && ft_strncmp(servip, player[i].ip, ft_strlen(player[i].ip)))
+		i++;
+	move_player(i, 0, player);
+	push_up(player);
 }

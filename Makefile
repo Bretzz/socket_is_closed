@@ -37,8 +37,9 @@ SRCS_DIR		=
 SRC_FILES		= main.c \
 				ClientUDP.c handle_client_players.c \
 				ServerUDP.c handle_server_players.c \
-				minigame.c game_inet.c player_stats.c \
-				ft_freentf.c convert_stuff.c inet_stuff.c player_stuff.c
+				minigame.c input_handling.c put_stuff.c \
+				player_buffer.c player_manage.c player_stats.c \
+				ft_freentf.c inet_stuff.c
 SRCS			= $(addprefix $(SRCS_DIR), $(SRC_FILES))
 
 # Objects
@@ -46,7 +47,11 @@ OBJS_DIR		= obj/
 OBJ_FILES		= $(SRCS:.c=.o)
 OBJS			= $(addprefix $(OBJS_DIR), $(OBJ_FILES))
 
-VPATH 			= src src/minigame src/client src/server
+VPATH 			= src \
+				src/player_db \
+				src/minigame \
+				src/client \
+				src/server
 
 ifeq ($(UNAME),Darwin)
 	MLX_DIR		= minilibx_opengl

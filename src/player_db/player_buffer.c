@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   game_inet.c                                        :+:      :+:    :+:   */
+/*   player_buffer.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: totommi <totommi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 12:51:37 by totommi           #+#    #+#             */
-/*   Updated: 2025/03/17 01:14:59 by totommi          ###   ########.fr       */
+/*   Updated: 2025/03/17 15:22:02 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ char	*get_host_update(char *buffer, t_player *player);
 void	send_all(t_mlx *mlx, const char *msg, size_t msg_size);
 
 //buffsize expected: >35
+//writes the 'new-host:name:ip' string into the buffer
 char	*get_host_update(char *buffer, t_player *player)
 {
 	int	i;
@@ -61,6 +62,7 @@ char	*get_lobby_stats(char *buffer, t_player *player)
 }
 
 //buffer is a stack allocated mem, buffsize needed >35
+//writes the 'name:ip:died' string into the buffer
 char *get_death(char *buffer, t_player me)
 {
 	if (buffer == NULL)
@@ -75,6 +77,7 @@ char *get_death(char *buffer, t_player me)
 }
 
 //buffer is a stack allocated mem, buffsize needed 55
+//writes the 'name:ip:px_py_pz:tx_ty_tz' string into the buffer
 char *get_pos(char *buffer, t_player me)
 {
 	char	*coords[6];
@@ -108,28 +111,4 @@ char *get_pos(char *buffer, t_player me)
 	}
 	free(coords[0]); free(coords[1]); free(coords[2]); free(coords[3]); free(coords[4]); free(coords[5]);
 	return (buffer);
-}
-
-void	send_all(t_mlx *mlx, const char *msg, size_t msg_size)
-{
-	int	i;
-
-	ft_printf(GREEN"sending: %s\n"RESET, msg);
-	if (*mlx->index != 0) //sendto host (ClientUDP)
-	{
-		if (send(mlx->player[0].socket, msg, msg_size, 0) < 0 )
-			perror(ERROR"sendto failed"RESET);
-		return ;
-	}
-	i = 1;
-	while (i < MAXPLAYERS) //sendto players (ServerUDP)
-	{
-		//ft_printf("sending to player: %s, socket: %i\n", mlx->player[i].ip, mlx->player[i].socket);
-		if (mlx->player[i].ip[0] != '\0')
-		{			
-			if (send(mlx->player[i].socket, msg, msg_size, 0) < 0 )
-				perror(ERROR"sendto failed"RESET);
-		}
-		i++;
-	}
 }
