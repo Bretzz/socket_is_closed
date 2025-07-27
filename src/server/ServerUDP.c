@@ -6,14 +6,14 @@
 /*   By: topiana- <topiana-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 22:59:15 by topiana-          #+#    #+#             */
-/*   Updated: 2025/03/17 15:30:56 by topiana-         ###   ########.fr       */
+/*   Updated: 2025/05/06 23:55:17 by topiana-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "socket_is_closed.h"
 
-//split up server reciever pls
-//static void	reciever_init(t_recenv *recenv){}
+// split up server reciever pls
+// static void	reciever_init(t_recenv *recenv){}
 
 /* accept one connnection and starts to listen to it.
 updates recenv->index so that the next thread can go onto
